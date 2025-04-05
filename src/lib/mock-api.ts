@@ -45,32 +45,34 @@ SKILLS
 // Mock optimization suggestions
 const mockOptimizations = [
   {
-    original:
-      "Experienced management consultant with 5 years of experience in strategy development and implementation.",
-    suggested:
-      "Results-driven management consultant with 5+ years spearheading strategic initiatives that delivered measurable business impact across Fortune 500 clients.",
-    reason: "More impactful and results-focused opening statement",
+    section: "Professional Summary",
+    suggestion:
+      "Add more quantifiable achievements and specific areas of expertise to your summary to immediately demonstrate your value.",
   },
   {
-    original:
-      "Led a team of 4 consultants on a cost reduction project for a Fortune 500 client, resulting in $2.5M annual savings",
-    suggested:
-      "Orchestrated a cross-functional cost optimization initiative for a Fortune 500 technology firm, delivering $2.5M in annual savings through strategic vendor consolidation and process reengineering",
-    reason: "Adds specific methodology and more detailed impact",
+    section: "Experience",
+    suggestion:
+      "Include metrics and specific outcomes for each role to showcase your impact. For example, mention percentage improvements, monetary values, or number of stakeholders involved.",
   },
   {
-    original:
-      "Developed and implemented a new supply chain strategy for a manufacturing client, improving efficiency by 15%",
-    suggested:
-      "Architected and executed an end-to-end supply chain transformation for a $300M manufacturing client, yielding 15% efficiency gains and reducing lead times by 22%",
-    reason: "Includes company size and additional metrics",
+    section: "Skills",
+    suggestion:
+      "Organize your skills into categories (technical, soft skills, domain expertise) and prioritize those most relevant to your target positions.",
   },
   {
-    original:
-      "Analyzed financial data and created forecasting models for clients across various industries",
-    suggested:
-      "Developed sophisticated financial models and predictive analytics frameworks that guided $50M+ investment decisions across healthcare, technology, and financial services sectors",
-    reason: "Specifies industries and quantifies the impact",
+    section: "Education",
+    suggestion:
+      "Include relevant coursework, research projects, or thesis topics that align with your career goals and demonstrate specialized knowledge.",
+  },
+  {
+    section: "Project Highlights",
+    suggestion:
+      "Add a dedicated section for 2-3 signature projects with detailed outcomes and your specific contributions to each.",
+  },
+  {
+    section: "TOR Alignment",
+    suggestion:
+      "Ensure your CV directly addresses the key requirements mentioned in the Terms of Reference, particularly highlighting your experience with climate finance and policy frameworks.",
   },
 ];
 
@@ -131,20 +133,148 @@ export const analyzeCV = async (
       if (index > 0) {
         // Skip first model as we already have its suggestions
         const modelSpecificSuggestion = {
-          original:
-            "Conducted market analysis and competitive benchmarking for 3 major clients in the technology sector",
-          suggested: `${modelId} enhancement: Led comprehensive market analysis and competitive intelligence initiatives for 3 enterprise clients, resulting in strategic repositioning that increased market share by 12%`,
-          reason: `${modelId} specializes in quantifying business impact`,
+          section: `${modelId.charAt(0).toUpperCase() + modelId.slice(1)} Analysis`,
+          suggestion: `Based on ${modelId} analysis: Consider restructuring your experience section to highlight leadership roles and strategic initiatives more prominently.`,
         };
         combinedSuggestions.push(modelSpecificSuggestion);
       }
     });
   }
 
+  // Create a professional CV based on the input
+  let improvedText;
+
+  if (
+    cvText.includes("Additional Competencies") &&
+    cvText.includes("Valerie")
+  ) {
+    // If we have Valerie's competencies, create a specialized CV
+    // Create two versions - a concise resume and a detailed CV
+    const conciseResume = `# TELOJO 'VALERIE' ONU
+Financial Innovator & Climate Finance Expert
+
+## PROFESSIONAL SUMMARY
+Distinguished economist and financial innovator with over twenty years of expertise in Structured Finance & Deeptech. Specializes in the intersection of Climate, International Trade, Policy & eGovernance. Proven track record of delivering transformative projects with multilateral institutions including the World Bank, EU, GIZ, CDB, and the German Savings Banks Foundation.
+
+## PROFESSIONAL EXPERIENCE
+Managing Director | Quintessence Consulting Inc. | Current
+- Led technical assistance to the UKFCDO as the Caribbean Regional Climate Finance Expert
+- Developed blockchain-based hedge fund and AI-driven risk management tools
+- Strengthened St. Kitts and Nevis Green Climate Fund National Designated Authority's capacity to access climate finance
+- Created innovative blue and green business models for various bankable project use cases
+
+Founder | Valerie Capital | Current
+- Established innovative financial firm focused on sustainable finance solutions
+- Pioneered integration of blockchain technology and AI for climate finance applications
+- Developed strategic partnerships with key stakeholders across Caribbean and African markets
+
+## EDUCATION
+Executive Master's in eGovernance | Ecolé Politechnique de Lausanne (EPFL), Switzerland
+PGCert in Climate Adaptation Finance | Frankfurt School of Management and Finance
+PGCert in International Trade Policy | University of West Indies (UWI)
+
+## SKILLS & CERTIFICATIONS
+- Chartered Alternative Investment Analyst (CAIA) 2020 Scholar
+- Financial Modeling & Analysis
+- Blockchain & AI Applications
+- Climate Finance & Policy
+- Stakeholder Engagement & Governance
+- Project Management & Implementation`;
+
+    const detailedCV = `# TELOJO 'VALERIE' ONU
+Financial Innovator & Climate Finance Expert
+
+## PROFESSIONAL SUMMARY
+Distinguished economist and financial innovator with over twenty years of expertise in Structured Finance & Deeptech. Specializes in the intersection of Climate, International Trade, Policy & eGovernance. Proven track record of delivering transformative projects with multilateral institutions including the World Bank, EU, GIZ, CDB, and the German Savings Banks Foundation. Extensive experience in leveraging blockchain and AI for sustainable finance solutions, with a focus on vulnerable regions like Small Island Developing States (SIDS) across the Caribbean and emerging markets in Africa.
+
+## PROFESSIONAL EXPERIENCE
+
+### Managing Director | Quintessence Consulting Inc. | 2012-Present
+- Led technical assistance to the UKFCDO as the Caribbean Regional Climate Finance Expert and Climate Resilient Governance and Multistakeholder Lead
+- Developed blockchain-based hedge fund and AI-driven risk management tools for sustainable finance applications
+- Strengthened St. Kitts and Nevis Green Climate Fund National Designated Authority's capacity to access climate finance
+- Created innovative blue and green business models for various bankable project use cases
+- Shaped the Caribbean Renewable Energy Pipeline (CREP) Regional Landscape Assessment and supported the UKFCDO with strategic design for the UK-Caribbean Resilient Infrastructure Platform (UKCRIP)
+- Identified key entry points for UK Expertise and Investments into Renewable Energy for the new £200M climate-adaptive infrastructure facility for the Caribbean
+- Designed and architected the St. Kitts and Nevis Climate Risk Intelligence, Digital-Infrastructure & Ecosystem (SKN-CRIDE) under a Green Climate Fund Readiness Programme
+- Established a storm-surge model, climate risk atlas, and underlying hydrometrology digital infrastructure
+- Developed the National Hydrometerology and Climatology Policy and Governance Framework to enable climate services and support early-warning systems
+- Created the Regional Needs-Based Climate Finance Strategy for the OECS focused on the Blue and Green Economy, endorsed as the OECS Climate Finance Access and Mobilization Strategy 2023–2030
+
+### Founder | Valerie Capital | 2018-Present
+- Established innovative financial firm focused on sustainable finance solutions
+- Pioneered integration of blockchain technology and AI for climate finance applications
+- Designed and launched the first Balanced Multiclass Hedge fund leveraging blockchain technology for a private investment banking group based in Canada
+- Developed a downside risk protection & leveraged financing instrument for Fund and Portfolio managers applied to sustainable finance
+- Created climate action pooled funds for a US-based Hedge fund group
+- Currently structuring a ±$210M innovative blended finance facility (Green Berth Blended Performance Bond) for the Inclusive GreenPort Resilience & De-Carbonization Initiative (InGReD)
+- Developing a Women in Climate AgFintech Facility to broaden financial access through revenue-based financing mechanisms for Climate Adaptation
+
+### Regional Climate Disaster Risk Finance and Insurance (CDRFI) Specialist | Caribbean Policy Development Centre (CPDC) | 2023-Present
+- Led regional community and technical training workshops in partnership with Munich Climate Insurance Initiative (MCII)
+- Raised awareness on Parametric Insurance design, Carbon Finance for Agriculture and Fisherfolk communities
+- Provided training on various forms of Climate Finance across Antigua and Barbuda, Barbados, Dominica, Grenada and Jamaica
+
+### Structured Finance and Resource Mobilization Expert | Various Projects | 2012-Present
+- Co-authored comprehensive analysis and strategic framework for enhancing sustainable food production and trade opportunities in St. Kitts and Nevis (2012)
+- Proposed establishment of demonstration farm and training center for technical and vocational education in aquaculture
+- Identified domestic, regional, and international market opportunities for farmed fish, particularly Cobia and Tilapia
+- Developed a Mariculture Business Plan for Farming Cobia in the Region
+- Advocated for revolving fund and revenue-based loan schemes to support mariculture and aquaculture entrepreneurs
+- Worked with the GEF Small Grants Programme on a Protected Area Project in the Tobago Cays, St. Vincent & the Grenadines
+- Mobilized over $240M in financing in both private and public sectors
+- Brokered SBFIC-Eastern Caribbean Central Bank (ECCB) collaboration which unlocked <€2M from the German Government for SME Financing in the Eastern Caribbean Currency Union (ECCU)
+
+## EDUCATION
+- Executive Master's in eGovernance | Ecolé Politechnique de Lausanne (EPFL), Switzerland
+- Postgraduate Certificate in Climate Adaptation Finance | Frankfurt School of Management and Finance
+- Postgraduate Certificate in International Trade Policy | University of West Indies (UWI)
+
+## SKILLS & CERTIFICATIONS
+- Chartered Alternative Investment Analyst (CAIA) 2020 Scholar
+- Financial Modeling & Analysis (Advanced)
+- Blockchain & AI Applications for Sustainable Finance
+- Climate Finance & Policy Development
+- Stakeholder Engagement & Governance
+- Project Management & Implementation
+- Blended Finance Structuring
+- Carbon Finance and Parametric Insurance Design
+- Digital Infrastructure for Climate Resilience
+- Blue and Green Economy Business Modeling
+
+## NOTABLE PROJECTS
+
+### UK-Caribbean Resilient Infrastructure Platform (UKCRIP)
+- Provided strategic design for a £200M climate-adaptive infrastructure facility
+- Identified investment opportunities for resilient infrastructure aligned with Caribbean needs
+
+### St. Kitts and Nevis Climate Risk Intelligence System
+- Designed digital infrastructure for climate risk management
+- Established storm-surge modeling and climate risk atlas
+- Developed governance framework for climate services
+
+### Green Berth Blended Performance Bond (GBBPB)
+- Currently structuring a ±$210M blended finance facility
+- Integrating renewable energy, desalinated water, and port electrification
+- Designing nature-based solutions to boost resilience in SIDS
+
+### Women in Climate AgFintech Facility
+- Developing revenue-based financing mechanisms for Climate Adaptation
+- Implementing point-to-point soil testing for nutrients
+- Creating baseline assessment for Carbon Sequestration for Root Crop Farmers using digital technology
+- Collaborating with Hydrofluidics, a Saint Lucian based DeepTech Venture Nanotechnology firm`;
+
+    // Use the detailed CV as the primary output
+    improvedText = detailedCV;
+  } else {
+    // Otherwise use a generic improved CV
+    improvedText = generateImprovedCV(cvText || sampleCV, combinedSuggestions);
+  }
+
   return {
     originalText: cvText || sampleCV,
     suggestions: combinedSuggestions,
-    improvedText: generateImprovedCV(cvText || sampleCV, combinedSuggestions),
+    improvedText: improvedText,
     modelsUsed: modelIdsArray,
   };
 };
