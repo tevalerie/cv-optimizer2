@@ -237,7 +237,7 @@ const FileUpload = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md">
-      <h2 className="text-2xl font-bold text-[#2B6CB0] mb-6 font-montserrat">
+      <h2 className="text-2xl font-bold text-[#2B6CB0] mb-6 font-playfair">
         Q-Genics AI CV Optimizer
       </h2>
 
@@ -254,7 +254,7 @@ const FileUpload = ({
           <div className="flex justify-center mb-6">
             <CheckCircle className="h-20 w-20 text-[#2B6CB0]" />
           </div>
-          <h3 className="text-2xl font-bold mb-4 font-montserrat text-[#2B6CB0]">
+          <h3 className="text-2xl font-bold mb-4 font-playfair text-[#2B6CB0]">
             Upload Successful!
           </h3>
           <p className="text-gray-700 mb-8 text-lg">
@@ -315,7 +315,7 @@ const FileUpload = ({
           <TabsContent value="cv" className="mt-0">
             <Card>
               <CardHeader>
-                <CardTitle className="text-[#2B6CB0] font-montserrat">
+                <CardTitle className="text-[#2B6CB0] font-playfair">
                   Upload Your CV
                 </CardTitle>
                 <CardDescription>
@@ -387,7 +387,7 @@ const FileUpload = ({
           <TabsContent value="tor" className="mt-0">
             <Card>
               <CardHeader>
-                <CardTitle className="text-[#2B6CB0] font-montserrat">
+                <CardTitle className="text-[#2B6CB0] font-playfair">
                   Upload Terms of Reference (TOR)
                 </CardTitle>
                 <CardDescription>
@@ -466,7 +466,7 @@ const FileUpload = ({
           <TabsContent value="competencies" className="mt-0">
             <Card>
               <CardHeader>
-                <CardTitle className="text-[#2B6CB0] font-montserrat">
+                <CardTitle className="text-[#2B6CB0] font-playfair">
                   Additional Competencies
                 </CardTitle>
                 <CardDescription>
@@ -505,7 +505,7 @@ const FileUpload = ({
       )}
 
       <div className="mt-8 bg-[#F5F5DC] p-6 rounded-lg border border-[#E0F7FA]">
-        <h3 className="text-lg font-medium text-[#2B6CB0] mb-4 font-montserrat">
+        <h3 className="text-lg font-medium text-[#2B6CB0] mb-4 font-playfair">
           Tips for Optimal Results:
         </h3>
         <ul className="text-sm text-gray-700 space-y-3">

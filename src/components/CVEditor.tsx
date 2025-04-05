@@ -85,7 +85,7 @@ const CVEditor = ({
     <div className="w-full max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-md">
       <div className="flex justify-between items-center mb-8 border-b border-[#E0F7FA] pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#2B6CB0] font-montserrat mb-2">
+          <h1 className="text-2xl font-bold text-[#2B6CB0] font-playfair mb-2">
             AI-Powered CV Optimization
           </h1>
           <p className="text-gray-600">
@@ -115,7 +115,7 @@ const CVEditor = ({
             <Sparkles className="h-5 w-5 text-[#2B6CB0]" />
           </div>
           <div>
-            <h3 className="font-semibold text-[#2B6CB0] font-montserrat">
+            <h3 className="font-semibold text-[#2B6CB0] font-playfair">
               AI Optimization Complete
             </h3>
             <p className="text-sm text-gray-700">
@@ -143,7 +143,7 @@ const CVEditor = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="h-full shadow-md border-[#E0F7FA]">
               <CardHeader className="bg-gray-50 border-b">
-                <CardTitle className="text-[#2B6CB0] font-montserrat flex items-center">
+                <CardTitle className="text-[#2B6CB0] font-playfair flex items-center">
                   <BookOpen className="mr-2 h-5 w-5" /> Original CV
                 </CardTitle>
                 <CardDescription>Your uploaded CV content</CardDescription>
@@ -159,7 +159,7 @@ const CVEditor = ({
 
             <Card className="h-full shadow-md border-[#E0F7FA]">
               <CardHeader className="bg-[#F5F5DC] border-b">
-                <CardTitle className="text-[#2B6CB0] font-montserrat flex items-center">
+                <CardTitle className="text-[#2B6CB0] font-playfair flex items-center">
                   <Sparkles className="mr-2 h-5 w-5" /> AI-Optimized CV
                 </CardTitle>
                 <CardDescription>
@@ -188,7 +188,7 @@ const CVEditor = ({
         <TabsContent value="suggestions" className="space-y-6">
           <Card className="shadow-md border-[#E0F7FA]">
             <CardHeader className="bg-[#F5F5DC] border-b">
-              <CardTitle className="text-[#2B6CB0] font-montserrat flex items-center">
+              <CardTitle className="text-[#2B6CB0] font-playfair flex items-center">
                 <Award className="mr-2 h-5 w-5" /> AI Enhancement Suggestions
               </CardTitle>
               <CardDescription>
@@ -248,7 +248,7 @@ const CVEditor = ({
             <CardHeader className="bg-[#F5F5DC] border-b">
               <div className="flex justify-between items-center">
                 <div>
-                  <CardTitle className="text-[#2B6CB0] font-montserrat flex items-center">
+                  <CardTitle className="text-[#2B6CB0] font-playfair flex items-center">
                     <FileDown className="mr-2 h-5 w-5" /> CV Preview
                   </CardTitle>
                   <CardDescription>
@@ -280,7 +280,7 @@ const CVEditor = ({
               </div>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="bg-white p-8 min-h-[600px] font-open-sans shadow-inner">
+              <div className="bg-white p-8 min-h-[600px] font-work-sans shadow-inner">
                 {/* Preview content with proper formatting */}
                 <div className="prose max-w-none">
                   {editedCV.split("\n").map((line, index) => {
@@ -288,7 +288,7 @@ const CVEditor = ({
                       return (
                         <h1
                           key={index}
-                          className="text-2xl font-bold mb-4 text-[#2B6CB0] font-montserrat"
+                          className="text-2xl font-bold mb-4 text-[#2B6CB0] font-playfair"
                         >
                           {line.substring(2)}
                         </h1>
@@ -297,7 +297,7 @@ const CVEditor = ({
                       return (
                         <h2
                           key={index}
-                          className="text-xl font-semibold mt-6 mb-3 text-[#2B6CB0] font-montserrat border-b border-[#E0F7FA] pb-2"
+                          className="text-xl font-semibold mt-6 mb-3 text-[#2B6CB0] font-playfair border-b border-[#E0F7FA] pb-2"
                         >
                           {line.substring(3)}
                         </h2>

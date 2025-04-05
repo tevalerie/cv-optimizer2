@@ -53,7 +53,7 @@ const DownloadOptions = ({
             <Sparkles className="h-5 w-5 text-[#2B6CB0]" />
           </div>
           <div>
-            <h3 className="font-semibold text-[#2B6CB0] font-montserrat">
+            <h3 className="font-semibold text-[#2B6CB0] font-playfair">
               Ready for Download
             </h3>
             <p className="text-sm text-gray-700">
@@ -66,7 +66,7 @@ const DownloadOptions = ({
 
       <Card className="w-full shadow-md border-[#E0F7FA]">
         <CardHeader className="bg-[#2B6CB0] text-white">
-          <CardTitle className="font-montserrat text-xl flex items-center">
+          <CardTitle className="font-playfair text-xl flex items-center">
             <FileDown className="mr-2 h-5 w-5" /> Download Your Optimized CV
           </CardTitle>
           <CardDescription className="text-gray-100">
@@ -76,7 +76,7 @@ const DownloadOptions = ({
         <CardContent className="pt-6">
           <div className="space-y-8">
             <div>
-              <h3 className="text-lg font-semibold mb-3 font-montserrat text-[#2B6CB0] flex items-center">
+              <h3 className="text-lg font-semibold mb-3 font-playfair text-[#2B6CB0] flex items-center">
                 <FileText className="mr-2 h-5 w-5" /> Select Template
               </h3>
               <Tabs
@@ -170,7 +170,7 @@ const DownloadOptions = ({
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-3 font-montserrat text-[#2B6CB0] flex items-center">
+              <h3 className="text-lg font-semibold mb-3 font-playfair text-[#2B6CB0] flex items-center">
                 <Download className="mr-2 h-5 w-5" /> Select Format
               </h3>
               <Tabs
@@ -225,7 +225,7 @@ const DownloadOptions = ({
             </div>
 
             <div className="p-6 border rounded-md bg-[#F5F5DC] border-[#E0F7FA]">
-              <h3 className="text-lg font-semibold mb-3 font-montserrat text-[#2B6CB0] flex items-center">
+              <h3 className="text-lg font-semibold mb-3 font-playfair text-[#2B6CB0] flex items-center">
                 <CheckCircle className="mr-2 h-5 w-5" /> Final Review
               </h3>
               <p className="text-sm mb-4 text-gray-700">
