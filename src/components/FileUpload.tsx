@@ -77,7 +77,12 @@ const FileUpload = ({
 
   const processCvFile = async (file: File) => {
     try {
+      // For text files, we can use readFileContent
+      // For PDFs and DOCXs, we would need more complex processing
+      // This is a simplified version for the standalone mode
       const content = await readFileContent(file);
+
+      // Store the actual content from the file
       setCvContent(content);
       return content;
     } catch (error) {
