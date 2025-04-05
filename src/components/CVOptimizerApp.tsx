@@ -17,10 +17,16 @@ export const CVOptimizerApp = () => {
   const mockOptimizedCV =
     "# Optimized CV\n\n## Education\nMaster of Science in Computer Science\nStanford University | 2018-2020\nGPA: 3.9/4.0\n\nBachelor of Science in Information Technology\nMassachusetts Institute of Technology | 2014-2018\nGPA: 3.8/4.0\n\n## Professional Experience\nSenior Software Engineer\nGoogle | 2020-Present\n- Architected and implemented scalable backend services using Go and Python, reducing system latency by 40%\n- Led a team of 5 engineers in developing a new API gateway that processes 1M+ requests daily\n- Collaborated with product and design teams to deliver features that increased user engagement by 25%\n\nSoftware Developer\nMicrosoft | 2018-2020\n- Developed responsive frontend components using React and TypeScript\n- Improved test coverage from 65% to 90%, reducing production bugs by 30%\n- Participated in bi-weekly code reviews and mentored 2 junior developers";
 
-  const handleFileUploaded = (file: File) => {
-    setUploadedFile(file);
-    // In a real app, we would process the file here
-    // For now, we'll just move to the next step after a short delay
+  const handleFileUploaded = (data: {
+    cvFile: File;
+    cvContent: string;
+    torFile?: File;
+    torContent?: string;
+    additionalCompetencies?: string;
+  }) => {
+    setUploadedFile(data.cvFile);
+    // In a real app, we would process the file content here
+    // For now, we'll use the mock data but in the future this would use the actual content
     setTimeout(() => {
       setCvContent(mockOptimizedCV);
       setCurrentStep("edit");
