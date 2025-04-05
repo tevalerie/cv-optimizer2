@@ -21,6 +21,13 @@ export const CVOptimizerApp = () => {
   ]);
   const [showApiConfig, setShowApiConfig] = useState(false);
   const [userApiKeys, setUserApiKeys] = useState<Record<string, string>>({});
+  const [uploadedData, setUploadedData] = useState<{
+    cvFile: File | null;
+    cvContent: string;
+    torFile?: File | null;
+    torContent?: string;
+    additionalCompetencies?: string;
+  }>({ cvFile: null, cvContent: "" });
 
   // Load user API keys on component mount
   useEffect(() => {
@@ -60,6 +67,9 @@ export const CVOptimizerApp = () => {
     additionalCompetencies?: string;
   }) => {
     setUploadedFile(data.cvFile);
+    setUploadedData(data); // Store all uploaded data
+    console.log("Uploaded data:", data); // Debug log
+
     // Show analysis in progress
     setIsAnalyzing(true);
 
@@ -74,8 +84,35 @@ export const CVOptimizerApp = () => {
     }, 200);
 
     try {
-      // Use the actual uploaded content instead of mock data
-      const result = await analyzeCV(data.cvContent, selectedAIModels);
+      // Check if the content is binary data (like from a DOCX file)
+      const isBinaryContent =
+        data.cvContent.includes("PK") ||
+        data.cvContent.includes("Content_Types") ||
+        data.cvContent.startsWith("%PDF");
+
+      let contentToAnalyze = data.cvContent;
+      let torContent = data.torContent || "";
+      let additionalInfo = data.additionalCompetencies || "";
+
+      // If it's binary content, use the mock CV instead
+      if (isBinaryContent) {
+        console.log("Binary content detected, using mock data instead");
+        contentToAnalyze = mockOriginalCV;
+      } else {
+        console.log("Using actual uploaded content");
+      }
+
+      // Combine TOR and additional competencies with CV for analysis
+      if (torContent) {
+        contentToAnalyze += "\n\n## TOR Requirements\n" + torContent;
+      }
+
+      if (additionalInfo) {
+        contentToAnalyze += "\n\n## Additional Competencies\n" + additionalInfo;
+      }
+
+      // Use the actual uploaded content or mock data if binary
+      const result = await analyzeCV(contentToAnalyze, selectedAIModels);
 
       // Set the improved CV content from the analysis result
       setCvContent(result.improvedText);
@@ -227,8 +264,10 @@ export const CVOptimizerApp = () => {
 
           {currentStep === "edit" && (
             <CVEditor
-              originalCV={mockOriginalCV}
+              originalCV={uploadedData.cvContent || mockOriginalCV}
               optimizedCV={cvContent}
+              torContent={uploadedData.torContent}
+              additionalCompetencies={uploadedData.additionalCompetencies}
               onSave={handleSaveCV}
               onBack={handleBack}
               onNext={handleNext}

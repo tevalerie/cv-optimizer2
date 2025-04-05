@@ -20,6 +20,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   ArrowLeft,
   ArrowRight,
@@ -36,6 +37,8 @@ import {
 interface CVEditorProps {
   originalCV?: string;
   optimizedCV?: string;
+  torContent?: string;
+  additionalCompetencies?: string;
   onSave?: (content: string) => void;
   onBack?: () => void;
   onNext?: () => void;
@@ -44,6 +47,8 @@ interface CVEditorProps {
 const CVEditor = ({
   originalCV = "# Original CV\n\n## Education\nMaster's in Computer Science, Stanford University, 2018-2020\nBachelor's in Information Technology, MIT, 2014-2018\n\n## Experience\nSoftware Engineer, Google, 2020-Present\n- Developed and maintained backend services\n- Collaborated with cross-functional teams\n\nJunior Developer, Microsoft, 2018-2020\n- Assisted in frontend development\n- Participated in code reviews",
   optimizedCV = "# Optimized CV\n\n## Education\nMaster of Science in Computer Science\nStanford University | 2018-2020\nGPA: 3.9/4.0\n\nBachelor of Science in Information Technology\nMassachusetts Institute of Technology | 2014-2018\nGPA: 3.8/4.0\n\n## Professional Experience\nSenior Software Engineer\nGoogle | 2020-Present\n- Architected and implemented scalable backend services using Go and Python, reducing system latency by 40%\n- Led a team of 5 engineers in developing a new API gateway that processes 1M+ requests daily\n- Collaborated with product and design teams to deliver features that increased user engagement by 25%\n\nSoftware Developer\nMicrosoft | 2018-2020\n- Developed responsive frontend components using React and TypeScript\n- Improved test coverage from 65% to 90%, reducing production bugs by 30%\n- Participated in bi-weekly code reviews and mentored 2 junior developers",
+  torContent = "",
+  additionalCompetencies = "",
   onSave = () => {},
   onBack = () => {},
   onNext = () => {},
@@ -51,6 +56,24 @@ const CVEditor = ({
   const [editedCV, setEditedCV] = useState(optimizedCV);
   const [selectedTemplate, setSelectedTemplate] = useState("standard");
   const [activeTab, setActiveTab] = useState("edit");
+  const [isBinaryContent, setIsBinaryContent] = useState(false);
+
+  // Check if content appears to be binary data
+  useEffect(() => {
+    const checkBinaryContent = () => {
+      if (
+        originalCV.includes("PK") ||
+        originalCV.includes("Content_Types") ||
+        originalCV.startsWith("%PDF")
+      ) {
+        setIsBinaryContent(true);
+      } else {
+        setIsBinaryContent(false);
+      }
+    };
+
+    checkBinaryContent();
+  }, [originalCV]);
 
   const handleSave = () => {
     onSave(editedCV);
@@ -109,6 +132,21 @@ const CVEditor = ({
         </div>
       </div>
 
+      {isBinaryContent && (
+        <Alert className="mb-6 bg-amber-50 border-amber-200">
+          <AlertCircle className="h-4 w-4 text-amber-600" />
+          <AlertTitle className="text-amber-800">
+            Binary File Detected
+          </AlertTitle>
+          <AlertDescription className="text-amber-700">
+            Your uploaded file appears to be in a binary format (DOCX/PDF). The
+            system is using placeholder content for demonstration. In a
+            production environment, we would use proper document parsing
+            libraries.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="bg-[#F5F5DC] p-4 rounded-lg mb-6 border border-[#E0F7FA]">
         <div className="flex items-start space-x-3">
           <div className="bg-[#E0F7FA] p-2 rounded-full">
@@ -151,7 +189,50 @@ const CVEditor = ({
               <CardContent className="p-0">
                 <ScrollArea className="h-[500px] p-4">
                   <div className="font-mono whitespace-pre-wrap">
-                    {originalCV}
+                    {isBinaryContent ? (
+                      <div className="text-gray-700">
+                        <p className="mb-4">
+                          Binary file content detected. Showing placeholder
+                          content instead.
+                        </p>
+                        <p className="mb-2">
+                          File name:{" "}
+                          {originalCV.includes("docx")
+                            ? "document.docx"
+                            : "document.pdf"}
+                        </p>
+                        <p>
+                          For demonstration purposes, the system is using sample
+                          CV content for processing.
+                        </p>
+                      </div>
+                    ) : (
+                      originalCV
+                    )}
+
+                    {torContent && (
+                      <>
+                        <div className="mt-6 pt-4 border-t border-gray-200">
+                          <h3 className="text-lg font-semibold text-[#2B6CB0] mb-2">
+                            TOR Requirements
+                          </h3>
+                          <div className="text-gray-700">{torContent}</div>
+                        </div>
+                      </>
+                    )}
+
+                    {additionalCompetencies && (
+                      <>
+                        <div className="mt-6 pt-4 border-t border-gray-200">
+                          <h3 className="text-lg font-semibold text-[#2B6CB0] mb-2">
+                            Additional Competencies
+                          </h3>
+                          <div className="text-gray-700">
+                            {additionalCompetencies}
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </ScrollArea>
               </CardContent>

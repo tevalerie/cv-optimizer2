@@ -96,8 +96,33 @@ export const analyzeCV = async (
   // For mock mode, simulate a delay to mimic API call
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
-  // Create different suggestions based on the models selected
+  // Create different suggestions based on the models selected and input content
   let combinedSuggestions = [...mockOptimizations];
+
+  // Check if the CV contains TOR or additional competencies sections
+  const hasTOR = cvText.includes("TOR Requirements");
+  const hasAdditionalCompetencies = cvText.includes("Additional Competencies");
+
+  // Add TOR-specific suggestions if TOR content is present
+  if (hasTOR) {
+    combinedSuggestions.push({
+      original: "Conducted market analysis and competitive benchmarking",
+      suggested:
+        "Conducted comprehensive market analysis and competitive benchmarking aligned with the Terms of Reference requirements",
+      reason: "Aligns experience with specific TOR requirements",
+    });
+  }
+
+  // Add competency-specific suggestions
+  if (hasAdditionalCompetencies) {
+    combinedSuggestions.push({
+      original: "Participated in code reviews and mentored 2 junior developers",
+      suggested:
+        "Demonstrated leadership and knowledge transfer capabilities by conducting regular code reviews and mentoring 2 junior developers",
+      reason:
+        "Highlights leadership competencies mentioned in additional information",
+    });
+  }
 
   // Add model-specific suggestions if multiple models are selected
   if (modelIdsArray.length > 1) {
