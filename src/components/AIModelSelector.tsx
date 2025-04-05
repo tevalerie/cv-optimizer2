@@ -2,7 +2,8 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
-import { Sparkles, Brain, Zap, Bot, Cpu } from "lucide-react";
+import { Sparkles, Brain, Zap, Bot, Cpu, AlertCircle } from "lucide-react";
+import { getApiKey } from "@/lib/api-keys";
 
 export type AIModel = "openai" | "claude" | "gemini" | "qwen" | "deepseek";
 
@@ -96,6 +97,12 @@ const AIModelSelector = ({
                       {model.name}
                     </p>
                     <p className="text-sm text-gray-500">{model.description}</p>
+                    {!getApiKey(model.id).isAvailable && (
+                      <p className="text-xs text-red-500 flex items-center mt-1">
+                        <AlertCircle className="h-3 w-3 mr-1" /> API key not
+                        configured
+                      </p>
+                    )}
                   </div>
                 </div>
               </Label>
