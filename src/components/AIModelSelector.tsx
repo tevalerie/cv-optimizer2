@@ -1,20 +1,35 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
-import { Sparkles, Brain, Zap, Bot, Cpu, AlertCircle } from "lucide-react";
+import {
+  Sparkles,
+  Brain,
+  Zap,
+  Bot,
+  Cpu,
+  AlertCircle,
+  Check,
+} from "lucide-react";
 import { getApiKey } from "@/lib/api-keys";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 export type AIModel = "openai" | "claude" | "gemini" | "qwen" | "deepseek";
+export type AIModels = AIModel[];
 
 interface AIModelSelectorProps {
-  selectedModel: AIModel;
-  onModelChange: (model: AIModel) => void;
+  selectedModels: AIModels;
+  onModelsChange: (models: AIModels) => void;
 }
 
 const AIModelSelector = ({
-  selectedModel = "openai",
-  onModelChange,
+  selectedModels = ["openai"],
+  onModelsChange,
 }: AIModelSelectorProps) => {
   const models = [
     {
@@ -61,54 +76,69 @@ const AIModelSelector = ({
     },
   ];
 
+  // Function to toggle a model selection
+  const toggleModelSelection = (modelId: AIModel) => {
+    if (selectedModels.includes(modelId)) {
+      // Don't allow deselecting the last model
+      if (selectedModels.length > 1) {
+        onModelsChange(selectedModels.filter((id) => id !== modelId));
+      }
+    } else {
+      onModelsChange([...selectedModels, modelId]);
+    }
+  };
+
   return (
     <Card className="border-[#E0F7FA] shadow-md">
       <CardHeader className="bg-[#F5F5DC] border-b">
         <CardTitle className="text-[#2B6CB0] font-playfair flex items-center">
-          <Sparkles className="mr-2 h-5 w-5" /> Select AI Model
+          <Sparkles className="mr-2 h-5 w-5" /> Select AI Models
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
-        <RadioGroup
-          value={selectedModel}
-          onValueChange={(value) => onModelChange(value as AIModel)}
-          className="space-y-3"
-        >
-          {models.map((model) => (
-            <div
-              key={model.id}
-              className={`flex items-center space-x-2 rounded-lg border p-4 ${selectedModel === model.id ? model.color : "border-gray-200"}`}
-            >
-              <RadioGroupItem value={model.id} id={model.id} />
-              <Label
-                htmlFor={model.id}
-                className="flex flex-1 cursor-pointer items-center justify-between"
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            Select one or more AI models to optimize your CV:
+          </p>
+
+          {models.map((model) => {
+            const isSelected = selectedModels.includes(model.id as AIModel);
+            return (
+              <div
+                key={model.id}
+                className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer ${isSelected ? model.color : "border-gray-200"}`}
+                onClick={() => toggleModelSelection(model.id as AIModel)}
               >
-                <div className="flex items-center space-x-3">
-                  <div
-                    className={`p-2 rounded-full ${selectedModel === model.id ? model.color : "bg-gray-100"}`}
-                  >
-                    {model.icon}
-                  </div>
-                  <div>
-                    <p
-                      className={`font-medium ${selectedModel === model.id ? model.textColor : "text-gray-700"}`}
+                <div className="flex-1 flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div
+                      className={`p-2 rounded-full ${isSelected ? model.color : "bg-gray-100"}`}
                     >
-                      {model.name}
-                    </p>
-                    <p className="text-sm text-gray-500">{model.description}</p>
-                    {!getApiKey(model.id).isAvailable && (
-                      <p className="text-xs text-red-500 flex items-center mt-1">
-                        <AlertCircle className="h-3 w-3 mr-1" /> API key not
-                        configured
+                      {model.icon}
+                    </div>
+                    <div>
+                      <p
+                        className={`font-medium ${isSelected ? model.textColor : "text-gray-700"}`}
+                      >
+                        {model.name}
                       </p>
-                    )}
+                      <p className="text-sm text-gray-500">
+                        {model.description}
+                      </p>
+                      {!getApiKey(model.id).isAvailable && (
+                        <p className="text-xs text-red-500 flex items-center mt-1">
+                          <AlertCircle className="h-3 w-3 mr-1" /> API key not
+                          configured
+                        </p>
+                      )}
+                    </div>
                   </div>
+                  {isSelected && <Check className="h-5 w-5 text-green-600" />}
                 </div>
-              </Label>
-            </div>
-          ))}
-        </RadioGroup>
+              </div>
+            );
+          })}
+        </div>
       </CardContent>
     </Card>
   );

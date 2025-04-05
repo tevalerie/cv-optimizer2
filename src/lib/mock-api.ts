@@ -77,27 +77,50 @@ const mockOptimizations = [
 /**
  * Mock function to analyze a CV
  * @param cvText The CV text to analyze
- * @param modelId The AI model to use
+ * @param modelIds The AI models to use (single string or array of strings)
  */
 export const analyzeCV = async (
   cvText: string,
-  modelId: string,
+  modelIds: string | string[],
 ): Promise<any> => {
+  // Convert single modelId to array for consistent handling
+  const modelIdsArray = Array.isArray(modelIds) ? modelIds : [modelIds];
+
   // If we have API keys configured, we would call the real API here
   if (hasAnyApiKeys()) {
     // This would be replaced with actual API calls
-    console.log(`Would call ${modelId} API with the CV text`);
+    console.log(`Would call ${modelIdsArray.join(", ")} APIs with the CV text`);
     // Return mock data for now until real implementation
   }
 
   // For mock mode, simulate a delay to mimic API call
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
+  // Create different suggestions based on the models selected
+  let combinedSuggestions = [...mockOptimizations];
+
+  // Add model-specific suggestions if multiple models are selected
+  if (modelIdsArray.length > 1) {
+    // Add some model-specific suggestions
+    modelIdsArray.forEach((modelId, index) => {
+      if (index > 0) {
+        // Skip first model as we already have its suggestions
+        const modelSpecificSuggestion = {
+          original:
+            "Conducted market analysis and competitive benchmarking for 3 major clients in the technology sector",
+          suggested: `${modelId} enhancement: Led comprehensive market analysis and competitive intelligence initiatives for 3 enterprise clients, resulting in strategic repositioning that increased market share by 12%`,
+          reason: `${modelId} specializes in quantifying business impact`,
+        };
+        combinedSuggestions.push(modelSpecificSuggestion);
+      }
+    });
+  }
+
   return {
     originalText: cvText || sampleCV,
-    suggestions: mockOptimizations,
-    improvedText: generateImprovedCV(cvText || sampleCV, mockOptimizations),
-    modelUsed: modelId,
+    suggestions: combinedSuggestions,
+    improvedText: generateImprovedCV(cvText || sampleCV, combinedSuggestions),
+    modelsUsed: modelIdsArray,
   };
 };
 

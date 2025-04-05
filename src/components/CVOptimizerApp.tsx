@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import FileUpload from "./FileUpload";
 import CVEditor from "./CVEditor";
 import DownloadOptions from "./DownloadOptions";
-import AIModelSelector, { AIModel } from "./AIModelSelector";
+import AIModelSelector, { AIModel, AIModels } from "./AIModelSelector";
 
 type Step = "upload" | "edit" | "download";
 
@@ -10,7 +10,9 @@ export const CVOptimizerApp = () => {
   const [currentStep, setCurrentStep] = useState<Step>("upload");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [cvContent, setCvContent] = useState<string>("");
-  const [selectedAIModel, setSelectedAIModel] = useState<AIModel>("openai");
+  const [selectedAIModels, setSelectedAIModels] = useState<AIModels>([
+    "openai",
+  ]);
 
   // Mock data for demonstration
   const mockOriginalCV =
@@ -62,8 +64,8 @@ export const CVOptimizerApp = () => {
       {currentStep === "upload" && (
         <div className="space-y-8">
           <AIModelSelector
-            selectedModel={selectedAIModel}
-            onModelChange={setSelectedAIModel}
+            selectedModels={selectedAIModels}
+            onModelsChange={setSelectedAIModels}
           />
           <FileUpload onFileUploaded={handleFileUploaded} />
         </div>
