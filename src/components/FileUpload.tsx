@@ -127,23 +127,7 @@ const FileUpload = ({
       }
 
       setCvFile(selectedFile);
-      setIsUploading(true);
-
-      // Process the file content
       await processCvFile(selectedFile);
-
-      // Simulate upload progress
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 10;
-        setUploadProgress(progress);
-
-        if (progress >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          setIsSuccess(true);
-        }
-      }, 300);
     },
     [acceptedFileTypes, maxFileSize],
   );
@@ -235,6 +219,32 @@ const FileUpload = ({
     }
   };
 
+  // Function to handle CV upload success
+  const handleCVUploadSuccess = () => {
+    setIsSuccess(false); // Hide the success message
+    setActiveTab("tor"); // Navigate to TOR tab
+  };
+
+  // Function to process the CV file with loading indicator
+  const processCvWithLoading = () => {
+    if (!cvFile) return;
+
+    setIsUploading(true);
+
+    // Simulate upload progress
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 10;
+      setUploadProgress(progress);
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        setIsUploading(false);
+        setIsSuccess(true);
+      }
+    }, 300);
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md">
       <h2 className="text-2xl font-bold text-[#2B6CB0] mb-6 font-playfair">
@@ -255,7 +265,7 @@ const FileUpload = ({
             <CheckCircle className="h-20 w-20 text-[#2B6CB0]" />
           </div>
           <h3 className="text-2xl font-bold mb-4 font-playfair text-[#2B6CB0]">
-            Upload Successful!
+            CV Upload Successful!
           </h3>
           <p className="text-gray-700 mb-8 text-lg">
             Your CV has been uploaded and processed successfully.
@@ -266,13 +276,13 @@ const FileUpload = ({
               variant="outline"
               className="px-6 py-3 text-[#2B6CB0] border-[#2B6CB0] hover:bg-[#F5F5DC] font-medium"
             >
-              Upload Another File
+              Upload Different CV
             </Button>
             <Button
-              onClick={handleContinue}
+              onClick={handleCVUploadSuccess}
               className="px-6 py-3 bg-[#E0F7FA] text-[#2B6CB0] hover:bg-[#B2EBF2] font-medium"
             >
-              Continue to Analysis
+              Continue to TOR Upload
             </Button>
           </div>
         </div>
@@ -304,10 +314,14 @@ const FileUpload = ({
             <TabsTrigger value="cv" className="font-medium">
               <FileText className="mr-2 h-4 w-4" /> CV Upload
             </TabsTrigger>
-            <TabsTrigger value="tor" className="font-medium">
+            <TabsTrigger value="tor" className="font-medium" disabled={!cvFile}>
               <BookOpen className="mr-2 h-4 w-4" /> TOR Upload
             </TabsTrigger>
-            <TabsTrigger value="competencies" className="font-medium">
+            <TabsTrigger
+              value="competencies"
+              className="font-medium"
+              disabled={!cvFile}
+            >
               <Briefcase className="mr-2 h-4 w-4" /> Additional Competencies
             </TabsTrigger>
           </TabsList>
@@ -373,10 +387,10 @@ const FileUpload = ({
                 {cvFile && (
                   <div className="mt-6 flex justify-end">
                     <Button
-                      onClick={() => setActiveTab("tor")}
+                      onClick={processCvWithLoading}
                       className="bg-[#E0F7FA] text-[#2B6CB0] hover:bg-[#B2EBF2]"
                     >
-                      Next: TOR Upload <FileUp className="ml-2 h-4 w-4" />
+                      Process CV <FileUp className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 )}
@@ -455,8 +469,7 @@ const FileUpload = ({
                     onClick={() => setActiveTab("competencies")}
                     className="bg-[#E0F7FA] text-[#2B6CB0] hover:bg-[#B2EBF2]"
                   >
-                    Next: Additional Competencies{" "}
-                    <Plus className="ml-2 h-4 w-4" />
+                    {torFile ? "Continue with TOR" : "Skip (Optional)"}
                   </Button>
                 </div>
               </CardContent>
@@ -495,7 +508,7 @@ const FileUpload = ({
                     className="bg-[#E0F7FA] text-[#2B6CB0] hover:bg-[#B2EBF2]"
                     disabled={!cvFile}
                   >
-                    Continue to Analysis
+                    Start Analysis
                   </Button>
                 </div>
               </CardContent>

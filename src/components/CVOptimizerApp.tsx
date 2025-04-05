@@ -3,6 +3,8 @@ import FileUpload from "./FileUpload";
 import CVEditor from "./CVEditor";
 import DownloadOptions from "./DownloadOptions";
 import AIModelSelector, { AIModel, AIModels } from "./AIModelSelector";
+import { Progress } from "./ui/progress";
+import { Loader2, Sparkles } from "lucide-react";
 
 type Step = "upload" | "edit" | "download";
 
@@ -21,6 +23,9 @@ export const CVOptimizerApp = () => {
   const mockOptimizedCV =
     "# Optimized CV\n\n## Education\nMaster of Science in Computer Science\nStanford University | 2018-2020\nGPA: 3.9/4.0\n\nBachelor of Science in Information Technology\nMassachusetts Institute of Technology | 2014-2018\nGPA: 3.8/4.0\n\n## Professional Experience\nSenior Software Engineer\nGoogle | 2020-Present\n- Architected and implemented scalable backend services using Go and Python, reducing system latency by 40%\n- Led a team of 5 engineers in developing a new API gateway that processes 1M+ requests daily\n- Collaborated with product and design teams to deliver features that increased user engagement by 25%\n\nSoftware Developer\nMicrosoft | 2018-2020\n- Developed responsive frontend components using React and TypeScript\n- Improved test coverage from 65% to 90%, reducing production bugs by 30%\n- Participated in bi-weekly code reviews and mentored 2 junior developers";
 
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const [analysisProgress, setAnalysisProgress] = useState<number>(0);
+
   const handleFileUploaded = (data: {
     cvFile: File;
     cvContent: string;
@@ -29,12 +34,24 @@ export const CVOptimizerApp = () => {
     additionalCompetencies?: string;
   }) => {
     setUploadedFile(data.cvFile);
-    // In a real app, we would process the file content here
-    // For now, we'll use the mock data but in the future this would use the actual content
-    setTimeout(() => {
-      setCvContent(mockOptimizedCV);
-      setCurrentStep("edit");
-    }, 1500);
+    // Show analysis in progress
+    setIsAnalyzing(true);
+
+    // Simulate analysis progress
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 5;
+      setAnalysisProgress(progress);
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        // In a real app, we would process all the files here
+        // For now, we'll use the mock data
+        setCvContent(mockOptimizedCV);
+        setIsAnalyzing(false);
+        setCurrentStep("edit");
+      }
+    }, 200);
   };
 
   const handleSaveCV = (content: string) => {
@@ -61,13 +78,58 @@ export const CVOptimizerApp = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      {currentStep === "upload" && (
+      {currentStep === "upload" && !isAnalyzing && (
         <div className="space-y-8">
           <AIModelSelector
             selectedModels={selectedAIModels}
             onModelsChange={setSelectedAIModels}
           />
           <FileUpload onFileUploaded={handleFileUploaded} />
+        </div>
+      )}
+
+      {isAnalyzing && (
+        <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md">
+          <div className="text-center py-8">
+            <div className="flex justify-center mb-6">
+              <Loader2 className="h-16 w-16 text-[#2B6CB0] animate-spin" />
+            </div>
+            <h3 className="text-2xl font-bold mb-4 font-playfair text-[#2B6CB0]">
+              Analyzing Your Documents
+            </h3>
+            <p className="text-gray-700 mb-8 text-lg">
+              Our AI models are optimizing your CV based on all provided
+              information...
+            </p>
+            <div className="max-w-md mx-auto mb-4">
+              <Progress value={analysisProgress} className="h-3" />
+            </div>
+            <p className="text-sm text-gray-500">
+              {analysisProgress}% complete
+            </p>
+
+            <div className="mt-8 bg-[#F5F5DC] p-4 rounded-lg border border-[#E0F7FA] max-w-md mx-auto">
+              <div className="flex items-start space-x-3">
+                <div className="bg-[#E0F7FA] p-2 rounded-full">
+                  <Sparkles className="h-5 w-5 text-[#2B6CB0]" />
+                </div>
+                <div className="text-left">
+                  <h4 className="font-semibold text-[#2B6CB0] font-playfair">
+                    Using {selectedAIModels.length} AI Model
+                    {selectedAIModels.length > 1 ? "s" : ""}
+                  </h4>
+                  <p className="text-sm text-gray-700">
+                    {selectedAIModels
+                      .map(
+                        (model) =>
+                          model.charAt(0).toUpperCase() + model.slice(1),
+                      )
+                      .join(", ")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
