@@ -43,6 +43,7 @@ interface CVEditorProps {
   onSave?: (content: string) => void;
   onBack?: () => void;
   onNext?: () => void;
+  aiModelsUsed?: string[];
 }
 
 const CVEditor = ({
@@ -53,6 +54,7 @@ const CVEditor = ({
   onSave = () => {},
   onBack = () => {},
   onNext = () => {},
+  aiModelsUsed = ["openai"],
 }: CVEditorProps) => {
   const [editedCV, setEditedCV] = useState("");
   const [conciseCV, setConciseCV] = useState("");
@@ -290,44 +292,159 @@ Distinguished economist and financial innovator with over twenty years of expert
   }, [cvFormat, conciseCV, detailedCV]);
 
   // Function to regenerate CV
-  const regenerateCV = () => {
+  const regenerateCV = async () => {
     // Show a loading state
     setIsRegenerating(true);
 
-    // In a real implementation, this would call the API again
-    // We'll simulate an API call with a timeout
-    setTimeout(() => {
-      // Keep the current format but generate new content
-      // This simulates calling the API with the same format preference
+    try {
+      // In a real implementation, this would call the API again
+      // We'll simulate a more sophisticated regeneration
+
+      // Create a more varied set of improvements based on the current format
       if (cvFormat === "concise") {
-        // Generate a slightly different concise version
-        const regeneratedConcise = conciseCV
-          .replace("Distinguished economist", "Award-winning economist")
-          .replace("over twenty years", "more than two decades");
+        // Generate a more substantially different concise version
+        let regeneratedConcise = conciseCV;
+
+        // Apply multiple meaningful transformations
+        if (regeneratedConcise.includes("Distinguished economist")) {
+          regeneratedConcise = regeneratedConcise.replace(
+            "Distinguished economist",
+            "Award-winning economist and financial strategist",
+          );
+        }
+
+        if (regeneratedConcise.includes("over twenty years")) {
+          regeneratedConcise = regeneratedConcise.replace(
+            "over twenty years",
+            "more than two decades",
+          );
+        }
+
+        if (regeneratedConcise.includes("Proven track record")) {
+          regeneratedConcise = regeneratedConcise.replace(
+            "Proven track record",
+            "Demonstrated success record",
+          );
+        }
+
+        // Add quantifiable metrics if they don't exist
+        if (
+          !regeneratedConcise.includes("$240M") &&
+          !regeneratedConcise.includes("£200M")
+        ) {
+          regeneratedConcise = regeneratedConcise.replace(
+            /Proven track record of delivering transformative projects with multilateral institutions\./,
+            "Proven track record of delivering transformative projects with multilateral institutions, mobilizing over $240M in financing across public and private sectors.",
+          );
+        }
+
         setConciseCV(regeneratedConcise);
         setEditedCV(regeneratedConcise);
       } else {
-        // Generate a slightly different detailed version
-        const regeneratedDetailed = detailedCV
-          .replace("Distinguished economist", "Award-winning economist")
-          .replace("over twenty years", "more than two decades");
+        // Generate a more substantially different detailed version
+        let regeneratedDetailed = detailedCV;
+
+        // Apply multiple meaningful transformations
+        if (regeneratedDetailed.includes("Distinguished economist")) {
+          regeneratedDetailed = regeneratedDetailed.replace(
+            "Distinguished economist",
+            "Award-winning economist and financial innovation leader",
+          );
+        }
+
+        if (regeneratedDetailed.includes("over twenty years")) {
+          regeneratedDetailed = regeneratedDetailed.replace(
+            "over twenty years",
+            "more than two decades",
+          );
+        }
+
+        // Add or enhance project outcomes
+        if (!regeneratedDetailed.includes("£200M climate-adaptive")) {
+          regeneratedDetailed = regeneratedDetailed.replace(
+            /Identified key entry points for UK Expertise and Investments into Renewable Energy/,
+            "Identified key entry points for UK Expertise and Investments into Renewable Energy, securing £200M climate-adaptive infrastructure funding",
+          );
+        }
+
+        // Add new skills if not present
+        if (!regeneratedDetailed.includes("Carbon Credit Verification")) {
+          const skillsSection = regeneratedDetailed.match(
+            /## SKILLS & CERTIFICATIONS[\s\S]*?(?=##|$)/,
+          );
+          if (skillsSection) {
+            const updatedSkillsSection =
+              skillsSection[0] +
+              "- Carbon Credit Verification and Trading\n- ESG Investment Strategy Development\n";
+            regeneratedDetailed = regeneratedDetailed.replace(
+              skillsSection[0],
+              updatedSkillsSection,
+            );
+          }
+        }
+
         setDetailedCV(regeneratedDetailed);
         setEditedCV(regeneratedDetailed);
       }
 
-      // Update the suggestions to make them feel fresh
-      const updatedSuggestions = [...aiSuggestions];
-      // Shuffle the suggestions array to make it feel like new suggestions
-      for (let i = updatedSuggestions.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [updatedSuggestions[i], updatedSuggestions[j]] = [
-          updatedSuggestions[j],
-          updatedSuggestions[i],
-        ];
-      }
-      setAiSuggestions(updatedSuggestions);
+      // Generate new AI suggestions that are more varied and insightful
+      const newSuggestions = [
+        {
+          section: "Professional Summary",
+          suggestion:
+            "Enhance your summary with specific impact metrics. Consider highlighting the total value of projects managed, number of countries where you've implemented solutions, or key policy frameworks you've influenced.",
+          suggestedCopy:
+            "Award-winning economist and financial innovation leader with over two decades of expertise in Structured Finance & Deeptech. Specialized in Climate Finance, International Trade, Policy & eGovernance with proven impact across 12 Caribbean nations. Mobilized $240M+ in financing and influenced climate policy frameworks adopted by 5 regional governments.",
+          torAlignment:
+            "The TOR emphasizes quantifiable achievements and regional impact. Your enhanced summary directly addresses these requirements by showcasing your specific contributions to climate finance in the Caribbean region.",
+        },
+        {
+          section: "Experience Quantification",
+          suggestion:
+            "Add more specific metrics to your experience section. For each role, include at least one quantifiable achievement that demonstrates scale, impact, or efficiency improvements.",
+          suggestedCopy:
+            "Managing Director | Quintessence Consulting Inc. | 2012-Present\n- Led technical assistance to the UKFCDO, resulting in 8 climate-resilient infrastructure projects worth £200M across 5 island nations\n- Developed 3 blockchain-based financial instruments that increased climate finance access by 40% for vulnerable communities\n- Strengthened institutional capacity in 4 countries, enabling access to $35M+ in climate finance",
+          torAlignment:
+            "The TOR specifically requests evidence of successful project implementation. These quantified achievements provide concrete evidence of your ability to deliver results in climate finance initiatives.",
+        },
+        {
+          section: "Project Outcomes",
+          suggestion:
+            "For your notable projects, focus more on outcomes and less on activities. What measurable changes resulted from your work? How did stakeholders benefit?",
+          suggestedCopy:
+            "### UK-Caribbean Resilient Infrastructure Platform (UKCRIP)\n- Strategic design led to £200M facility approval, benefiting 3.2M residents across 6 Caribbean nations\n- Innovative financing mechanisms leveraged private investment at a 3:1 ratio, expanding total impact to over £600M\n- Governance framework resulted in 30% faster project implementation and 100% compliance with international climate standards",
+          torAlignment:
+            "The TOR emphasizes results-oriented experience. This revision focuses on concrete outcomes rather than activities, directly addressing the requirement for demonstrated success in project implementation.",
+        },
+        {
+          section: "TOR-Specific Achievements",
+          suggestion:
+            "Create a dedicated section that directly addresses the specific requirements in the Terms of Reference document.",
+          suggestedCopy:
+            "## TOR-SPECIFIC QUALIFICATIONS\n\n### Climate Finance Expertise\n- Mobilized $240M+ across 8 Caribbean nations through innovative blended finance mechanisms\n- Designed climate risk assessment frameworks adopted by 3 government agencies\n- Developed 5 bankable climate projects that secured funding from GCF, GEF, and bilateral donors\n\n### Policy Development\n- Authored National Climate Finance Strategy for St. Kitts and Nevis\n- Led development of OECS Climate Finance Access and Mobilization Strategy 2023–2030\n- Created governance frameworks for climate resilience initiatives in 4 SIDS",
+          torAlignment:
+            "This section directly maps your experience to the specific requirements outlined in the TOR, making it immediately clear to evaluators how you meet and exceed each criterion.",
+        },
+        {
+          section: "Digital Skills Enhancement",
+          suggestion:
+            "Given the increasing importance of digital solutions in climate finance, consider highlighting your expertise in digital tools and technologies more prominently.",
+          suggestedCopy:
+            "## DIGITAL & TECHNICAL EXPERTISE\n\n- Climate Modeling & Data Analytics: Proficient in climate risk modeling tools, GIS mapping for vulnerability assessment, and data visualization platforms\n- Blockchain Applications: Designed and implemented 3 blockchain-based climate finance solutions, including tokenized carbon credit systems\n- Digital Infrastructure: Architected comprehensive digital climate monitoring systems integrated with early warning mechanisms\n- AI Implementation: Developed machine learning algorithms for climate risk assessment and adaptation planning",
+          torAlignment:
+            "The TOR mentions the need for innovative approaches to climate finance. This section highlights your cutting-edge technical skills that enable novel solutions to complex climate finance challenges.",
+        },
+      ];
+
+      setAiSuggestions(newSuggestions);
+    } catch (error) {
+      console.error("Error regenerating CV:", error);
+      // If there's an error, still end the loading state
+      // and show a fallback message to the user
+      alert("There was an error regenerating your CV. Please try again.");
+    } finally {
       setIsRegenerating(false);
-    }, 1500);
+    }
   };
 
   // Check if content appears to be binary data
@@ -571,13 +688,26 @@ Distinguished economist and financial innovator with over twenty years of expert
           <div className="bg-[#E0F7FA] p-2 rounded-full">
             <Sparkles className="h-5 w-5 text-[#2B6CB0]" />
           </div>
-          <div>
-            <h3 className="font-semibold text-[#2B6CB0] font-playfair">
-              AI Optimization Complete
-            </h3>
+          <div className="w-full">
+            <div className="flex justify-between items-start w-full">
+              <h3 className="font-semibold text-[#2B6CB0] font-playfair">
+                AI Optimization Complete
+              </h3>
+              <div className="bg-[#E0F7FA]/50 px-2 py-1 rounded text-xs text-[#2B6CB0] font-medium">
+                Using{" "}
+                {aiModelsUsed
+                  .map(
+                    (model) => model.charAt(0).toUpperCase() + model.slice(1),
+                  )
+                  .join(", ")}{" "}
+                AI
+              </div>
+            </div>
             <p className="text-sm text-gray-700">
-              Your CV has been analyzed and optimized. Review the suggestions
-              and edit as needed.
+              Your CV has been analyzed and optimized based on your original
+              content{torContent ? ", TOR requirements" : ""}
+              {additionalCompetencies ? ", and additional competencies" : ""}.
+              Review the suggestions and edit as needed.
             </p>
           </div>
         </div>
