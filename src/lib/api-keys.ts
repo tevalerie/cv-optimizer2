@@ -112,3 +112,21 @@ export const getAllAvailableModels = (): string[] => {
 
   return allModels;
 };
+
+/**
+ * Get a list of all supported AI models
+ */
+export const getAllSupportedModels = (): string[] => {
+  return ["openai", "claude", "gemini", "qwen", "deepseek"];
+};
+
+/**
+ * Save user API keys to localStorage
+ */
+export const saveUserApiKeys = (keys: Record<string, string>): void => {
+  try {
+    localStorage.setItem("user_api_keys", JSON.stringify(keys));
+  } catch (error) {
+    console.error("Error saving user API keys:", error);
+  }
+};

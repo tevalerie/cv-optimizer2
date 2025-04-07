@@ -19,12 +19,7 @@ export const extractTextFromFile = async (file: File): Promise<string> => {
   ) {
     // For binary files, create a more descriptive placeholder with sample content
     const fileExtension = fileName.split(".").pop();
-    const placeholderContent = `# Content extracted from ${file.name}
-
-File type: ${fileType}
-File size: ${Math.round(file.size / 1024)} KB
-
-`;
+    const placeholderContent = `# Content extracted from ${file.name}\n\nFile type: ${fileType}\nFile size: ${Math.round(file.size / 1024)} KB\n\n`;
 
     // Add specific content based on file type
     if (fileName.endsWith(".pdf")) {
