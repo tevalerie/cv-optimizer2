@@ -596,7 +596,8 @@ Distinguished economist and financial innovator with over twenty years of expert
         </TabsList>
 
         <TabsContent value="edit" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Original CV - Left Column */}
             <Card className="h-full shadow-md border-[#E0F7FA]">
               <CardHeader className="bg-gray-50 border-b">
                 <CardTitle className="text-[#2B6CB0] font-playfair flex items-center">
@@ -673,6 +674,60 @@ Distinguished economist and financial innovator with over twenty years of expert
               </CardContent>
             </Card>
 
+            {/* AI Suggestions - Middle Column */}
+            <Card className="h-full shadow-md border-[#E0F7FA]">
+              <CardHeader className="bg-[#F5F5DC] border-b">
+                <CardTitle className="text-[#2B6CB0] font-playfair flex items-center">
+                  <Award className="mr-2 h-5 w-5" /> AI Suggestions
+                </CardTitle>
+                <CardDescription>
+                  Recommendations to improve your CV
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <ScrollArea className="h-[500px] p-4">
+                  <div className="space-y-4">
+                    {aiSuggestions.slice(0, 3).map((item, index) => (
+                      <div
+                        key={index}
+                        className="bg-white p-3 rounded-lg border border-[#E0F7FA] shadow-sm mb-4"
+                      >
+                        <div className="flex items-start space-x-2">
+                          <div className="bg-[#E0F7FA] p-1.5 rounded-full mt-1">
+                            <CheckCircle className="h-3 w-3 text-[#2B6CB0]" />
+                          </div>
+                          <div className="w-full">
+                            <div className="flex items-center mb-1">
+                              <h4 className="font-semibold text-[#2B6CB0] mr-2 text-sm">
+                                {item.section}
+                              </h4>
+                              <Badge
+                                variant="outline"
+                                className="bg-[#E0F7FA]/30 text-[#2B6CB0] border-[#2B6CB0] text-xs"
+                              >
+                                Tip
+                              </Badge>
+                            </div>
+                            <p className="text-gray-700 text-sm mb-2">
+                              {item.suggestion}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      onClick={() => setActiveTab("suggestions")}
+                      className="w-full border-[#2B6CB0] text-[#2B6CB0] mt-2"
+                    >
+                      View All Suggestions
+                    </Button>
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+
+            {/* AI-Optimized CV - Right Column */}
             <Card className="h-full shadow-md border-[#E0F7FA]">
               <CardHeader className="bg-[#F5F5DC] border-b">
                 <div className="flex justify-between items-center">

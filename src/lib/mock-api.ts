@@ -96,13 +96,7 @@ export const analyzeCV = async (
   }
 
   // For mock mode, simulate a delay to mimic API call
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-
-  // Generate suggestions based on the actual CV content and TOR if available
-  const suggestions = generateSuggestionsFromCV(
-    cvText,
-    hasTOR ? torContent : undefined,
-  );
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   // Check if the CV contains TOR or additional competencies sections
   const hasTOR =
@@ -110,7 +104,16 @@ export const analyzeCV = async (
     cvText.includes("Terms of Reference");
   const hasAdditionalCompetencies = cvText.includes("Additional Competencies");
 
-  // TOR-specific suggestions are now handled in generateSuggestionsFromCV
+  // Extract TOR content if available
+  const torContent = hasTOR
+    ? cvText.split("TOR Requirements")[1]?.split("\n\n")[0] || ""
+    : "";
+
+  // Generate suggestions based on the actual CV content and TOR if available
+  const suggestions = generateSuggestionsFromCV(
+    cvText,
+    hasTOR ? torContent : undefined,
+  );
 
   // Add competency-specific suggestions
   if (hasAdditionalCompetencies) {
@@ -270,6 +273,13 @@ export const generatePDF = async (
   // For mock mode, simulate a delay
   await new Promise((resolve) => setTimeout(resolve, 1500));
 
+  // Randomly fail sometimes to test error handling
+  if (Math.random() < 0.3) {
+    throw new Error(
+      "PDF generation failed - this is a simulated error for testing error handling",
+    );
+  }
+
   // Return a mock PDF blob (this is just a placeholder)
   return new Blob([cvText], { type: "application/pdf" });
 };
@@ -286,6 +296,13 @@ export const generateDOCX = async (
 
   // For mock mode, simulate a delay
   await new Promise((resolve) => setTimeout(resolve, 1500));
+
+  // Randomly fail sometimes to test error handling
+  if (Math.random() < 0.3) {
+    throw new Error(
+      "DOCX generation failed - this is a simulated error for testing error handling",
+    );
+  }
 
   // Return a mock DOCX blob (this is just a placeholder)
   return new Blob([cvText], {

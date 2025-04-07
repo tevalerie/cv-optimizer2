@@ -482,7 +482,9 @@ const FileUpload = ({
                     onClick={() => setActiveTab("competencies")}
                     className="bg-[#E0F7FA] text-[#2B6CB0] hover:bg-[#B2EBF2]"
                   >
-                    {torFile ? "Continue with TOR" : "Skip (Optional)"}
+                    {torFile
+                      ? "Continue to Additional Competencies"
+                      : "Skip (Optional)"}
                   </Button>
                 </div>
               </CardContent>
