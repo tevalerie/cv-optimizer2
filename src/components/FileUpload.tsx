@@ -61,9 +61,18 @@ const FileUpload = ({
 
   // Function to process CV file
   const processCvFile = async (file: File) => {
+    let progressInterval: number | undefined;
     try {
       setIsUploading(true);
       setUploadProgress(10);
+
+      // Set up progress indicator for better UX
+      progressInterval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev < 40) return prev + 2;
+          return prev;
+        });
+      }, 100);
 
       // Extract text from the file using our utility function
       let extractedText = "";
@@ -92,6 +101,12 @@ const FileUpload = ({
         processedContent ||
         `# Content extracted from ${file.name}\n\nFile type: ${file.type}\nFile size: ${(file.size / 1024).toFixed(2)} KB\n\nNo text content could be extracted from this file.`;
 
+      // Clear the progress interval
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = undefined;
+      }
+
       setCvContent(safeContent);
       setUploadProgress(100);
       setIsUploading(false);
@@ -100,6 +115,13 @@ const FileUpload = ({
     } catch (error) {
       console.error("Error processing CV file:", error);
       setError("Failed to read CV file content. Please try again.");
+
+      // Clear the progress interval
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = undefined;
+      }
+
       setIsUploading(false);
       setUploadProgress(0);
 
@@ -140,7 +162,10 @@ const FileUpload = ({
       }
 
       // Clear the interval and complete the progress
-      if (tempProgress) clearInterval(tempProgress);
+      if (tempProgress) {
+        clearInterval(tempProgress);
+        tempProgress = undefined;
+      }
       setUploadProgress(100);
       setTimeout(() => setUploadProgress(0), 500);
 
@@ -149,7 +174,10 @@ const FileUpload = ({
     } catch (error) {
       console.error("Error processing TOR file:", error);
       setError("Failed to read TOR file content. Please try again.");
-      if (tempProgress) clearInterval(tempProgress);
+      if (tempProgress) {
+        clearInterval(tempProgress);
+        tempProgress = undefined;
+      }
       setUploadProgress(0);
 
       // Return a fallback content that won't break the app

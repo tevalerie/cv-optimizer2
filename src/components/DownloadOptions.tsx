@@ -281,7 +281,11 @@ const DownloadOptions = ({
           </div>
         </CardContent>
         <CardFooter className="flex justify-between space-x-2 border-t p-4 bg-gray-50">
-          <Button variant="outline" className="border-[#2B6CB0] text-[#2B6CB0]">
+          <Button
+            variant="outline"
+            className="border-[#2B6CB0] text-[#2B6CB0]"
+            onClick={() => window.history.back()}
+          >
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Editor
           </Button>
           <Button
