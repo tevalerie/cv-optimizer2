@@ -27,7 +27,12 @@ export const analyzeCV = async (
   // If no API key is available, use mock API
   if (!openaiApiKey) {
     console.log("No OpenAI API key available, using mock API");
-    return mockAnalyzeCV(cvText, modelIdsArray);
+    try {
+      return await mockAnalyzeCV(cvText, modelIdsArray);
+    } catch (error) {
+      console.error("Error in mock API:", error);
+      throw new Error("Failed to analyze CV with mock API");
+    }
   }
 
   try {

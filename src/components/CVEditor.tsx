@@ -126,41 +126,43 @@ const CVEditor = ({
 
   // Update editedCV when optimizedCV changes
   useEffect(() => {
-    if (optimizedCV) {
-      let cleanedCV = optimizedCV;
+    try {
+      // Ensure we have valid content to work with
+      if (optimizedCV && optimizedCV.trim() !== "") {
+        let cleanedCV = optimizedCV;
 
-      // Clean up the CV content to ensure it's properly formatted
-      // Remove any binary markers if present
-      cleanedCV = cleanedCV.replace(/%PDF-binary-content/g, "");
-      cleanedCV = cleanedCV.replace(/PK-binary-content-docx/g, "");
+        // Clean up the CV content to ensure it's properly formatted
+        // Remove any binary markers if present
+        cleanedCV = cleanedCV.replace(/%PDF-binary-content/g, "");
+        cleanedCV = cleanedCV.replace(/PK-binary-content-docx/g, "");
 
-      // Remove any placeholder messages
-      cleanedCV = cleanedCV.replace(
-        /This is a placeholder for the binary file content.*/g,
-        "",
-      );
+        // Remove any placeholder messages
+        cleanedCV = cleanedCV.replace(
+          /This is a placeholder for the binary file content.*/g,
+          "",
+        );
 
-      // Ensure the content has proper markdown formatting
-      if (!cleanedCV.startsWith("#") && !cleanedCV.includes("\n#")) {
-        const lines = cleanedCV.split("\n");
-        if (lines.length > 0 && lines[0].trim()) {
-          // Assume the first non-empty line is the name
-          cleanedCV = `# ${lines[0].trim()}\n\n` + lines.slice(1).join("\n");
-        } else {
-          // Add a generic heading if we can't find a name
-          cleanedCV = `# CV Content\n\n` + cleanedCV;
+        // Ensure the content has proper markdown formatting
+        if (!cleanedCV.startsWith("#") && !cleanedCV.includes("\n#")) {
+          const lines = cleanedCV.split("\n");
+          if (lines.length > 0 && lines[0].trim()) {
+            // Assume the first non-empty line is the name
+            cleanedCV = `# ${lines[0].trim()}\n\n` + lines.slice(1).join("\n");
+          } else {
+            // Add a generic heading if we can't find a name
+            cleanedCV = `# CV Content\n\n` + cleanedCV;
+          }
         }
-      }
 
-      // Check if we have additionalCompetencies available
-      const hasValerieData =
-        additionalCompetencies &&
-        (additionalCompetencies.includes("Valerie") ||
-          additionalCompetencies.includes("Telojo"));
+        // Check if we have additionalCompetencies available
+        const hasValerieData =
+          additionalCompetencies &&
+          (additionalCompetencies.includes("Valerie") ||
+            additionalCompetencies.includes("Telojo"));
 
-      if (hasValerieData) {
-        // Create concise and detailed versions
-        const conciseVersion = `# TELOJO 'VALERIE' ONU
+        if (hasValerieData) {
+          // Create concise and detailed versions
+          const conciseVersion = `# TELOJO 'VALERIE' ONU
 Financial Innovator & Climate Finance Expert
 
 ## PROFESSIONAL SUMMARY
@@ -187,7 +189,7 @@ PGCert in International Trade Policy | University of West Indies (UWI)
 - Financial modeling and innovative business modeling
 - Climate finance and policy expertise`;
 
-        const detailedVersion = `# TELOJO 'VALERIE' ONU
+          const detailedVersion = `# TELOJO 'VALERIE' ONU
 Financial Innovator & Climate Finance Expert
 
 ## PROFESSIONAL SUMMARY
@@ -270,17 +272,29 @@ Distinguished economist and financial innovator with over twenty years of expert
 - Creating baseline assessment for Carbon Sequestration for Root Crop Farmers using digital technology
 - Collaborating with Hydrofluidics, a Saint Lucian based DeepTech Venture Nanotechnology firm`;
 
-        setConciseCV(conciseVersion);
-        setDetailedCV(detailedVersion);
+          setConciseCV(conciseVersion);
+          setDetailedCV(detailedVersion);
 
-        // Set the initial CV based on the selected format
-        cleanedCV = cvFormat === "concise" ? conciseVersion : detailedVersion;
+          // Set the initial CV based on the selected format
+          cleanedCV = cvFormat === "concise" ? conciseVersion : detailedVersion;
+        }
+
+        setEditedCV(cleanedCV);
+      } else if (originalCV && originalCV.trim() !== "") {
+        // If no optimized CV is provided but we have an original CV, use that as a starting point
+        setEditedCV(originalCV);
+      } else {
+        // Fallback to a default template if neither is available
+        setEditedCV(
+          "# CV Content\n\n## Professional Summary\nAdd your professional summary here.\n\n## Experience\nAdd your work experience here.\n\n## Education\nAdd your education details here.\n\n## Skills\nAdd your skills here.",
+        );
       }
-
-      setEditedCV(cleanedCV);
-    } else if (originalCV) {
-      // If no optimized CV is provided but we have an original CV, use that as a starting point
-      setEditedCV(originalCV);
+    } catch (error) {
+      console.error("Error updating edited CV:", error);
+      // Provide a fallback template in case of any errors
+      setEditedCV(
+        "# CV Content\n\n## Professional Summary\nExperienced professional with a strong background in the relevant field.\n\n## Experience\nSenior Position | Company Name\nDate Range\n- Key achievement 1\n- Key achievement 2\n- Key achievement 3\n\n## Education\nDegree, Field of Study | University Name\nGraduation Year\n\n## Skills\n- Technical skills\n- Soft skills\n- Domain expertise",
+      );
     }
   }, [optimizedCV, additionalCompetencies, cvFormat, originalCV]);
 
@@ -301,7 +315,7 @@ Distinguished economist and financial innovator with over twenty years of expert
       // We'll simulate a more sophisticated regeneration
 
       // Create a more varied set of improvements based on the current format
-      if (cvFormat === "concise") {
+      if (cvFormat === "concise" && conciseCV) {
         // Generate a more substantially different concise version
         let regeneratedConcise = conciseCV;
 
@@ -340,7 +354,7 @@ Distinguished economist and financial innovator with over twenty years of expert
 
         setConciseCV(regeneratedConcise);
         setEditedCV(regeneratedConcise);
-      } else {
+      } else if (detailedCV) {
         // Generate a more substantially different detailed version
         let regeneratedDetailed = detailedCV;
 
@@ -385,6 +399,36 @@ Distinguished economist and financial innovator with over twenty years of expert
 
         setDetailedCV(regeneratedDetailed);
         setEditedCV(regeneratedDetailed);
+      } else {
+        // If no concise or detailed CV is available, generate a generic improvement
+        const currentCV = editedCV || "";
+
+        // Add some professional enhancements to whatever content we have
+        let enhancedCV = currentCV;
+
+        // Add a professional title if missing
+        if (
+          !enhancedCV.includes("Professional") &&
+          !enhancedCV.includes("Expert")
+        ) {
+          enhancedCV = enhancedCV.replace(
+            /^# ([^\n]+)/,
+            "# $1\nFinancial Expert & Strategic Consultant",
+          );
+        }
+
+        // Ensure we have a professional summary
+        if (
+          !enhancedCV.includes("## Professional Summary") &&
+          !enhancedCV.includes("## PROFESSIONAL SUMMARY")
+        ) {
+          enhancedCV = enhancedCV.replace(
+            /^# ([^\n]+)\n([^\n]+)?\n/,
+            "# $1\n$2\n\n## Professional Summary\nExperienced professional with expertise in financial consulting and strategic planning. Skilled in developing innovative solutions and providing expert advice to organizations across multiple sectors.\n\n",
+          );
+        }
+
+        setEditedCV(enhancedCV);
       }
 
       // Generate new AI suggestions that are more varied and insightful
@@ -441,7 +485,21 @@ Distinguished economist and financial innovator with over twenty years of expert
       console.error("Error regenerating CV:", error);
       // If there's an error, still end the loading state
       // and show a fallback message to the user
-      alert("There was an error regenerating your CV. Please try again.");
+      console.warn("Regeneration error, using fallback suggestions");
+      // Don't show alert as it might block the UI
+      // Instead, set some fallback suggestions
+      setAiSuggestions([
+        {
+          section: "General Improvements",
+          suggestion:
+            "Consider adding more quantifiable achievements to your CV to demonstrate impact.",
+        },
+        {
+          section: "Format Enhancement",
+          suggestion:
+            "Ensure consistent formatting throughout your CV for a professional appearance.",
+        },
+      ]);
     } finally {
       setIsRegenerating(false);
     }

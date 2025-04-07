@@ -5,7 +5,13 @@ import DownloadOptions from "./DownloadOptions";
 import AIModelSelector, { AIModel, AIModels } from "./AIModelSelector";
 import APIKeyConfig from "./APIKeyConfig";
 import { Progress } from "./ui/progress";
-import { Loader2, Sparkles, Settings } from "lucide-react";
+import {
+  Loader2,
+  Sparkles,
+  Settings,
+  AlertCircle,
+  ArrowLeft,
+} from "lucide-react";
 import {
   analyzeCV as realAnalyzeCV,
   generatePDF as realGeneratePDF,
@@ -22,10 +28,11 @@ import {
   hasAnyApiKeys,
 } from "@/lib/api-keys";
 import { Button } from "./ui/button";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 type Step = "upload" | "edit" | "download";
 
-export const CVOptimizerApp = () => {
+const CVOptimizerApp = () => {
   const [currentStep, setCurrentStep] = useState<Step>("upload");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [cvContent, setCvContent] = useState<string>("");
@@ -41,6 +48,7 @@ export const CVOptimizerApp = () => {
     torContent?: string;
     additionalCompetencies?: string;
   }>({ cvFile: null, cvContent: "" });
+  const [error, setError] = useState<string | null>(null);
 
   // Load user API keys on component mount
   useEffect(() => {
@@ -79,91 +87,152 @@ export const CVOptimizerApp = () => {
     torContent?: string;
     additionalCompetencies?: string;
   }) => {
-    setUploadedFile(data.cvFile);
-    setUploadedData(data); // Store all uploaded data
-    console.log("Uploaded data:", data); // Debug log
-
-    // Show analysis in progress
-    setIsAnalyzing(true);
-
-    // Start progress animation
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 5;
-      if (progress <= 90) {
-        // Only go up to 90% for animation
-        setAnalysisProgress(progress);
-      }
-    }, 200);
+    // Clear any previous errors
+    setError(null);
 
     try {
-      let contentToAnalyze = data.cvContent;
-      let torContent = data.torContent || "";
-      let additionalInfo = data.additionalCompetencies || "";
+      // Validate input data
+      if (!data.cvFile) {
+        setError("No CV file provided. Please upload a valid CV file.");
+        return;
+      }
 
-      // Check if the content is binary data (like from a DOCX file)
-      const isBinaryContent =
-        data.cvContent.includes("PK") ||
-        data.cvContent.includes("Content_Types") ||
-        data.cvContent.startsWith("%PDF") ||
-        data.cvContent.includes("-binary-content");
+      // Ensure we have at least some content to work with
+      if (!data.cvContent || data.cvContent.trim() === "") {
+        console.warn("Empty CV content received, using fallback content");
+        data.cvContent = `# CV Content\n\nNo content could be extracted from ${data.cvFile.name}.`;
+      }
 
-      // If it's binary content, use mock data or additional competencies
-      if (isBinaryContent) {
+      setUploadedFile(data.cvFile);
+      setUploadedData(data); // Store all uploaded data
+      console.log("Uploaded data:", data); // Debug log
+
+      // Show analysis in progress
+      setIsAnalyzing(true);
+
+      // Start progress animation
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 5;
+        if (progress <= 90) {
+          // Only go up to 90% for animation
+          setAnalysisProgress(progress);
+        }
+      }, 200);
+
+      try {
+        let contentToAnalyze = data.cvContent;
+        let torContent = data.torContent || "";
+        let additionalInfo = data.additionalCompetencies || "";
+
+        // Check if the content is binary data (like from a DOCX file)
+        const isBinaryContent =
+          data.cvContent.includes("PK") ||
+          data.cvContent.includes("Content_Types") ||
+          data.cvContent.startsWith("%PDF") ||
+          data.cvContent.includes("-binary-content");
+
+        // If it's binary content, use mock data or additional competencies
+        if (isBinaryContent) {
+          console.log(
+            "Binary content detected, using mock or additional competencies",
+          );
+
+          // If we have additional competencies, use them to create a CV
+          if (additionalInfo && additionalInfo.length > 50) {
+            console.log("Using additional competencies to create CV");
+            contentToAnalyze = `# CV Based on Provided Information\n\n## Professional Background\n${additionalInfo}\n`;
+          } else {
+            // Use a more realistic mock CV with professional content
+            console.log("Using mock professional CV data");
+            contentToAnalyze = `# Professional CV\n\n## Professional Summary\nExperienced financial consultant with expertise in structured finance, blockchain technology, and sustainable development. Skilled in developing innovative financial solutions and providing strategic advice to organizations across multiple sectors.\n\n## Experience\nManaging Director | Quintessence Consulting Inc. | 2018-Present\n- Led development of blockchain-based financial solutions for sustainable development\n- Provided technical assistance to government agencies on climate finance initiatives\n- Designed and implemented financial models for green investment projects\n\n## Education\nExecutive Master's in eGovernance | Ecolé Politechnique de Lausanne (EPFL)\nPGCert in Climate Adaptation Finance | Frankfurt School of Management and Finance\nPGCert in International Trade Policy | University of West Indies (UWI)\n\n## Skills & Certifications\n- Chartered Alternative Investment Analyst (CAIA)\n- Blockchain and AI technologies\n- Financial modeling and analysis\n- Climate finance and policy expertise\n- Project management and stakeholder engagement`;
+          }
+        }
+
+        console.log("Using actual uploaded content");
+
+        // Combine TOR and additional competencies with CV for analysis
+        if (torContent) {
+          contentToAnalyze += "\n\n## TOR Requirements\n" + torContent;
+        }
+
+        if (additionalInfo) {
+          contentToAnalyze +=
+            "\n\n## Additional Competencies\n" + additionalInfo;
+        }
+
+        // Determine whether to use real API or mock API based on available API keys
+        const useRealAPI = hasAnyApiKeys();
         console.log(
-          "Binary content detected, using mock or additional competencies",
+          `Using ${useRealAPI ? "real" : "mock"} API for CV analysis`,
         );
 
-        // If we have additional competencies, use them to create a CV
-        if (additionalInfo && additionalInfo.length > 50) {
-          console.log("Using additional competencies to create CV");
-          contentToAnalyze = `# CV Based on Provided Information\n\n## Professional Background\n${additionalInfo}\n`;
-        } else {
-          // Use a more realistic mock CV with professional content
-          console.log("Using mock professional CV data");
-          contentToAnalyze = `# Professional CV\n\n## Professional Summary\nExperienced financial consultant with expertise in structured finance, blockchain technology, and sustainable development. Skilled in developing innovative financial solutions and providing strategic advice to organizations across multiple sectors.\n\n## Experience\nManaging Director | Quintessence Consulting Inc. | 2018-Present\n- Led development of blockchain-based financial solutions for sustainable development\n- Provided technical assistance to government agencies on climate finance initiatives\n- Designed and implemented financial models for green investment projects\n\n## Education\nExecutive Master's in eGovernance | Ecolé Politechnique de Lausanne (EPFL)\nPGCert in Climate Adaptation Finance | Frankfurt School of Management and Finance\nPGCert in International Trade Policy | University of West Indies (UWI)\n\n## Skills & Certifications\n- Chartered Alternative Investment Analyst (CAIA)\n- Blockchain and AI technologies\n- Financial modeling and analysis\n- Climate finance and policy expertise\n- Project management and stakeholder engagement`;
+        // Use the appropriate API function based on availability of API keys
+        let result;
+        try {
+          result = useRealAPI
+            ? await realAnalyzeCV(contentToAnalyze, selectedAIModels)
+            : await mockAnalyzeCV(contentToAnalyze, selectedAIModels);
+
+          // Validate the result
+          if (!result || typeof result !== "object") {
+            throw new Error("Invalid analysis result returned from API");
+          }
+
+          // Ensure improvedText exists
+          if (!result.improvedText) {
+            console.warn("No improvedText in result, using original content");
+            result.improvedText = contentToAnalyze;
+          }
+
+          // Set the improved CV content from the analysis result
+          setCvContent(result.improvedText);
+        } catch (apiError) {
+          console.error("API error:", apiError);
+          setError(
+            `Error analyzing CV: ${apiError instanceof Error ? apiError.message : "Unknown API error"}`,
+          );
+
+          // Use original content as fallback
+          setCvContent(contentToAnalyze);
+        }
+
+        // Complete the progress bar
+        setAnalysisProgress(100);
+        setTimeout(() => {
+          clearInterval(interval);
+          setIsAnalyzing(false);
+          setCurrentStep("edit");
+        }, 500);
+      } catch (error) {
+        console.error("Error analyzing CV:", error);
+        // Make sure interval is defined before clearing it
+        if (typeof interval !== "undefined") {
+          clearInterval(interval);
+        }
+        setIsAnalyzing(false);
+        setAnalysisProgress(0);
+        setError(
+          `Error analyzing CV: ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
+
+        // Set fallback content to ensure the app doesn't break
+        if (!cvContent) {
+          setCvContent(mockOriginalCV);
         }
       }
-
-      console.log("Using actual uploaded content");
-
-      // Combine TOR and additional competencies with CV for analysis
-      if (torContent) {
-        contentToAnalyze += "\n\n## TOR Requirements\n" + torContent;
-      }
-
-      if (additionalInfo) {
-        contentToAnalyze += "\n\n## Additional Competencies\n" + additionalInfo;
-      }
-
-      // Determine whether to use real API or mock API based on available API keys
-      const useRealAPI = hasAnyApiKeys();
-      console.log(`Using ${useRealAPI ? "real" : "mock"} API for CV analysis`);
-
-      // Use the appropriate API function based on availability of API keys
-      const result = useRealAPI
-        ? await realAnalyzeCV(contentToAnalyze, selectedAIModels)
-        : await mockAnalyzeCV(contentToAnalyze, selectedAIModels);
-
-      // Set the improved CV content from the analysis result
-      setCvContent(result.improvedText);
-
-      // Store the suggestions if they exist in the result
-      const suggestions = result.suggestions || [];
-
-      // Complete the progress bar
-      setAnalysisProgress(100);
-      setTimeout(() => {
-        clearInterval(interval);
-        setIsAnalyzing(false);
-        setCurrentStep("edit");
-      }, 500);
-    } catch (error) {
-      console.error("Error analyzing CV:", error);
-      clearInterval(interval);
+    } catch (outerError) {
+      console.error("Outer error in handleFileUploaded:", outerError);
       setIsAnalyzing(false);
-      // Show error message to user (would implement proper error handling in production)
-      alert("Error analyzing CV. Please try again.");
+      setAnalysisProgress(0);
+      setError(
+        `Error processing file: ${outerError instanceof Error ? outerError.message : "Unknown error"}`,
+      );
+
+      // Set fallback content to ensure the app doesn't break
+      if (!cvContent) {
+        setCvContent(mockOriginalCV);
+      }
     }
   };
 
@@ -213,12 +282,26 @@ export const CVOptimizerApp = () => {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error(`Error generating ${format}:`, error);
-      alert(`Error generating ${format}. Please try again.`);
+      setError(
+        `Error generating ${format}: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
+      {error && (
+        <div className="max-w-4xl mx-auto mb-6">
+          <Alert variant="destructive" className="bg-red-50 border-red-200">
+            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertTitle className="text-red-800">Error</AlertTitle>
+            <AlertDescription className="text-red-700">
+              {error}
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+
       {showApiConfig ? (
         <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md">
           <div className="flex justify-between items-center mb-6">
@@ -306,10 +389,12 @@ export const CVOptimizerApp = () => {
             </div>
           )}
 
-          {currentStep === "edit" && (
+          {currentStep === "edit" && !isAnalyzing && (
             <CVEditor
               originalCV={uploadedData.cvContent || mockOriginalCV}
-              optimizedCV={cvContent}
+              optimizedCV={
+                cvContent || uploadedData.cvContent || mockOptimizedCV
+              }
               torContent={uploadedData.torContent}
               additionalCompetencies={uploadedData.additionalCompetencies}
               onSave={handleSaveCV}
@@ -326,12 +411,13 @@ export const CVOptimizerApp = () => {
                   onClick={handleBack}
                   className="flex items-center gap-2 text-[#2B6CB0] font-medium"
                 >
-                  ← Back to Editor
+                  <ArrowLeft className="h-4 w-4" /> Back to Editor
                 </button>
               </div>
               <DownloadOptions
                 cvData={{
-                  content: cvContent,
+                  content:
+                    cvContent || uploadedData.cvContent || mockOptimizedCV,
                   title: "Your Optimized CV",
                 }}
                 onDownload={handleDownload}

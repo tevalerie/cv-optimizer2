@@ -3,78 +3,7 @@
  * This allows the application to function in standalone mode
  */
 
-import { hasAnyApiKeys } from "./api-keys";
-
-// Sample CV content for mock responses
-const sampleCV = `
-John Smith
-jsmith@email.com | (555) 123-4567 | linkedin.com/in/johnsmith
-
-PROFESSIONAL SUMMARY
-Experienced management consultant with 5 years of experience in strategy development and implementation. Strong analytical skills with expertise in data-driven decision making and process optimization.
-
-EXPERIENCE
-Senior Consultant | ABC Consulting
-Jan 2020 - Present
-- Led a team of 4 consultants on a cost reduction project for a Fortune 500 client, resulting in $2.5M annual savings
-- Developed and implemented a new supply chain strategy for a manufacturing client, improving efficiency by 15%
-- Conducted market analysis and competitive benchmarking for 3 major clients in the technology sector
-
-Consultant | XYZ Advisory
-Jun 2017 - Dec 2019
-- Supported the development of a 5-year strategic plan for a healthcare provider
-- Analyzed financial data and created forecasting models for clients across various industries
-- Prepared and delivered client presentations and implementation roadmaps
-
-EDUCATION
-MBA, Business Administration | Harvard Business School
-2015 - 2017
-
-B.S., Economics | University of Pennsylvania
-2011 - 2015
-
-SKILLS
-- Strategic Planning
-- Financial Analysis
-- Project Management
-- Data Visualization
-- Market Research
-- Client Relationship Management
-`;
-
-// Mock optimization suggestions
-const mockOptimizations = [
-  {
-    section: "Professional Summary",
-    suggestion:
-      "Add more quantifiable achievements and specific areas of expertise to your summary to immediately demonstrate your value.",
-  },
-  {
-    section: "Experience",
-    suggestion:
-      "Include metrics and specific outcomes for each role to showcase your impact. For example, mention percentage improvements, monetary values, or number of stakeholders involved.",
-  },
-  {
-    section: "Skills",
-    suggestion:
-      "Organize your skills into categories (technical, soft skills, domain expertise) and prioritize those most relevant to your target positions.",
-  },
-  {
-    section: "Education",
-    suggestion:
-      "Include relevant coursework, research projects, or thesis topics that align with your career goals and demonstrate specialized knowledge.",
-  },
-  {
-    section: "Project Highlights",
-    suggestion:
-      "Add a dedicated section for 2-3 signature projects with detailed outcomes and your specific contributions to each.",
-  },
-  {
-    section: "TOR Alignment",
-    suggestion:
-      "Ensure your CV directly addresses the key requirements mentioned in the Terms of Reference, particularly highlighting your experience with climate finance and policy frameworks.",
-  },
-];
+import { AIModel } from "@/components/AIModelSelector";
 
 /**
  * Mock function to analyze a CV
@@ -88,15 +17,8 @@ export const analyzeCV = async (
   // Convert single modelId to array for consistent handling
   const modelIdsArray = Array.isArray(modelIds) ? modelIds : [modelIds];
 
-  // If we have API keys configured, we would call the real API here
-  if (hasAnyApiKeys()) {
-    // This would be replaced with actual API calls
-    console.log(`Would call ${modelIdsArray.join(", ")} APIs with the CV text`);
-    // Return mock data for now until real implementation
-  }
-
   // For mock mode, simulate a delay to mimic API call
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   // Check if the CV contains TOR or additional competencies sections
   const hasTOR =
@@ -137,11 +59,33 @@ export const analyzeCV = async (
     additionalCompetencies.includes("Valerie");
 
   // Generate suggestions based on the actual CV content and TOR if available
-  const suggestions = generateSuggestionsFromCV(
-    cvText,
-    hasTOR ? torContent : undefined,
-    isValerieCV,
-  );
+  const suggestions = [
+    {
+      section: "Professional Summary",
+      suggestion:
+        "Add quantifiable achievements to highlight your impact. Include specific metrics that demonstrate your expertise and the value you've brought to previous roles.",
+    },
+    {
+      section: "Experience",
+      suggestion:
+        "Include specific metrics and outcomes for each role. Quantify your achievements with percentages, dollar amounts, or other measurable results.",
+    },
+    {
+      section: "Skills",
+      suggestion:
+        "Organize your skills into categories (technical, soft skills, domain expertise) and prioritize those most relevant to your target positions.",
+    },
+    {
+      section: "Education",
+      suggestion:
+        "Include relevant coursework, research projects, or thesis topics that align with your career goals and demonstrate specialized knowledge.",
+    },
+    {
+      section: "Project Highlights",
+      suggestion:
+        "Add a dedicated section for 2-3 signature projects with detailed outcomes and your specific contributions to each.",
+    },
+  ];
 
   // Add competency-specific suggestions
   if (hasAdditionalCompetencies) {
@@ -228,6 +172,31 @@ Distinguished economist and financial innovator with over twenty years of expert
 - Designed digital infrastructure for climate risk management
 - Established storm-surge modeling and climate risk atlas
 - Developed governance framework for climate services`;
+  } else {
+    // For non-Valerie CVs, make some basic improvements
+    improvedText = improvedText
+      .replace(/worked on/gi, "successfully delivered")
+      .replace(/helped with/gi, "led initiatives for")
+      .replace(/used/gi, "leveraged")
+      .replace(/made/gi, "developed")
+      .replace(/good/gi, "excellent");
+
+    // Add a professional summary if missing
+    if (
+      !improvedText.includes("Professional Summary") &&
+      !improvedText.includes("PROFESSIONAL SUMMARY")
+    ) {
+      const summarySection =
+        "\n\n## Professional Summary\nExperienced professional with a proven track record of delivering results. Skilled in strategic planning, project management, and stakeholder engagement.\n";
+
+      // Insert after the title or at the beginning
+      if (improvedText.startsWith("#")) {
+        const lines = improvedText.split("\n");
+        improvedText = lines[0] + summarySection + lines.slice(1).join("\n");
+      } else {
+        improvedText = "# Professional CV" + summarySection + improvedText;
+      }
+    }
   }
 
   return {
@@ -239,150 +208,14 @@ Distinguished economist and financial innovator with over twenty years of expert
 };
 
 /**
- * Generate suggestions based on the CV content
- */
-const generateSuggestionsFromCV = (
-  cvText: string,
-  torContent?: string,
-  isValerieCV: boolean = false,
-): any[] => {
-  // Base suggestions with detailed content and TOR alignment
-  let suggestions = [];
-
-  if (isValerieCV) {
-    // Valerie-specific suggestions
-    suggestions = [
-      {
-        section: "Professional Summary",
-        suggestion:
-          "Highlight your expertise in climate finance and structured finance more prominently. Consider adding a brief statement about your impact in terms of total funding secured or number of projects successfully implemented.",
-        suggestedCopy:
-          "Distinguished economist and financial innovator with over 20 years of expertise in Structured Finance & Deeptech, specializing in Climate Finance, International Trade, Policy & eGovernance. Mobilized over $240M in financing across public and private sectors, with proven success delivering transformative projects with multilateral institutions including the World Bank, EU, GIZ, and CDB.",
-        torAlignment: torContent
-          ? "The TOR emphasizes the need for expertise in climate finance and policy frameworks. Your summary should highlight your extensive experience with multilateral institutions and your track record in sustainable development initiatives."
-          : "Consider highlighting your expertise in climate finance and policy frameworks more prominently.",
-      },
-      {
-        section: "Experience",
-        suggestion:
-          "For each role, quantify your achievements with specific metrics where possible. For example, mention the exact amount of funding secured, percentage improvements in project outcomes, or number of stakeholders engaged.",
-        suggestedCopy:
-          "Managing Director | Quintessence Consulting Inc. | 2012-Present\n- Led technical assistance to the UKFCDO as the Caribbean Regional Climate Finance Expert, resulting in the development of climate-resilient infrastructure projects worth £200M\n- Strengthened St. Kitts and Nevis Green Climate Fund National Designated Authority's capacity, enabling access to $15M+ in climate finance\n- Developed innovative blue and green business models that attracted $35M in sustainable investments across 5 Caribbean nations",
-        torAlignment: torContent
-          ? "The TOR requires demonstrated expertise in climate finance and policy development. Your experience section should emphasize your leadership in securing funding and implementing sustainable development initiatives."
-          : "Focus on demonstrating your expertise in climate finance and policy development through specific achievements.",
-      },
-      {
-        section: "Skills",
-        suggestion:
-          "Organize your skills into categories (technical, domain expertise, soft skills) and prioritize those most relevant to climate finance and sustainable development.",
-        suggestedCopy:
-          "Climate Finance Expertise:\n- Blended Finance Structuring, Carbon Finance, Parametric Insurance Design\n- Climate Adaptation Finance, Green Bonds, Results-based Climate Finance\n\nPolicy & Governance:\n- Climate Policy Development, Stakeholder Engagement, Governance Frameworks\n- Digital Infrastructure for Climate Resilience, Regulatory Compliance\n\nFinancial Innovation:\n- Financial Modeling & Analysis (Advanced), Blockchain Applications for Sustainable Finance\n- Innovative Business Modeling, Risk Assessment & Management",
-        torAlignment: torContent
-          ? "The TOR specifically mentions requirements for expertise in climate finance and policy frameworks. Your skills section should clearly demonstrate your capabilities in these areas."
-          : "Highlight your expertise in climate finance and policy frameworks through organized skill categories.",
-      },
-      {
-        section: "Project Highlights",
-        suggestion:
-          "Add a dedicated section for 2-3 signature projects with detailed outcomes and your specific contributions to each.",
-        suggestedCopy:
-          "## NOTABLE PROJECTS\n\n### UK-Caribbean Resilient Infrastructure Platform (UKCRIP)\n- Led strategic design for a £200M climate-adaptive infrastructure facility\n- Developed innovative financing mechanisms that leveraged private investment at a 3:1 ratio\n- Created governance framework ensuring transparent fund allocation and measurable climate resilience outcomes\n\n### Green Berth Blended Performance Bond (GBBPB)\n- Structured a $210M blended finance facility integrating renewable energy and port electrification\n- Designed performance metrics that reduced investor risk while ensuring climate adaptation outcomes\n- Implemented nature-based solutions boosting resilience in SIDS while generating carbon credits",
-        torAlignment: torContent
-          ? "The TOR requires a proven track record in project implementation. This section provides concrete examples of your ability to design and execute complex climate finance initiatives."
-          : "Showcase your proven track record in project implementation through detailed project highlights.",
-      },
-    ];
-
-    // Add TOR-specific suggestions if TOR content is available
-    if (torContent) {
-      suggestions.push({
-        section: "TOR-Specific Achievements",
-        suggestion:
-          "Create a section that directly addresses the specific requirements mentioned in the TOR document.",
-        suggestedCopy:
-          "## TOR-SPECIFIC ACHIEVEMENTS\n\n### Climate Finance Expertise\n- Mobilized over $240M in climate finance across 8 Caribbean nations\n- Designed and implemented innovative blended finance mechanisms for climate adaptation projects\n- Developed climate risk assessment frameworks adopted by 3 government agencies\n\n### Policy Development\n- Authored the National Hydrometerology and Climatology Policy for St. Kitts and Nevis\n- Contributed to the OECS Climate Finance Access and Mobilization Strategy 2023–2030\n- Designed governance frameworks for climate resilience initiatives in multiple SIDS",
-        torAlignment:
-          "This section directly addresses the core requirements outlined in the TOR, demonstrating your specific qualifications and experience relevant to the position.",
-      });
-    }
-  } else {
-    // Generic professional suggestions
-    suggestions = [
-      {
-        section: "Professional Summary",
-        suggestion:
-          "Add quantifiable achievements to highlight your impact. Include specific metrics that demonstrate your expertise and the value you've brought to previous roles.",
-        suggestedCopy: cvText.includes("Software Engineer")
-          ? "Senior Software Engineer with 4+ years of expertise in full-stack development, specializing in React, TypeScript, and Node.js. Delivered responsive, high-performance web applications that improved user engagement by 35% and reduced load times by 40%. Passionate about creating scalable, maintainable solutions that solve real business problems."
-          : "Experienced management consultant with 5+ years of expertise in strategy development and implementation, delivering over $5M in cost savings for Fortune 500 clients. Recognized for strong analytical skills and data-driven decision making that has improved operational efficiency by 15-25% across multiple industries.",
-        torAlignment: torContent
-          ? "The TOR requires expertise in strategic planning and implementation. Your summary should emphasize your track record of successful strategy execution with measurable outcomes."
-          : "Focus on demonstrating your expertise through measurable outcomes.",
-      },
-      {
-        section: "Experience",
-        suggestion:
-          "Include specific metrics and outcomes for each role. Quantify your achievements with percentages, dollar amounts, or other measurable results.",
-        suggestedCopy: cvText.includes("Software Engineer")
-          ? "Senior Software Engineer | Tech Solutions Inc.\nMar 2021 - Present\n- Architected and implemented a microservices-based API platform using Node.js and Express, reducing system latency by 45% and supporting 2M+ daily requests\n- Led the development of responsive UI components with React and TypeScript that improved user engagement metrics by 35% and reduced bounce rates by 28%\n- Collaborated with product and UX teams to deliver 12 major feature releases on time and within scope, resulting in a 22% increase in user retention"
-          : "Led a cross-functional team of 6 consultants on a comprehensive cost reduction project for a Fortune 500 manufacturing client, resulting in $3.2M annual savings (18% reduction) and implementation of sustainable cost control measures that maintained quality standards.",
-        torAlignment: torContent
-          ? "The TOR emphasizes project management and implementation experience. Your experience section should highlight your leadership in delivering complex projects with tangible results."
-          : "Highlight your leadership in delivering complex projects with tangible results.",
-      },
-      {
-        section: "Skills",
-        suggestion:
-          "Prioritize skills mentioned in the job description and organize them by category. Focus on both technical and soft skills that are most relevant to the position.",
-        suggestedCopy: cvText.includes("Software Engineer")
-          ? "Technical Skills:\n- Frontend: React, Redux, TypeScript, HTML5/CSS3, Responsive Design\n- Backend: Node.js, Express, RESTful APIs, GraphQL\n- Database: MongoDB, PostgreSQL, Redis\n- DevOps: Docker, AWS, CI/CD pipelines, Git\n\nSoft Skills:\n- Technical Leadership, Agile Methodologies, Cross-functional Collaboration\n- Problem Solving, Performance Optimization, Code Review"
-          : "Strategic Planning & Analysis: Business strategy development, market analysis, competitive benchmarking, scenario planning\nFinancial Expertise: Financial modeling, cost-benefit analysis, ROI optimization, budget management\nLeadership & Communication: Team leadership, client relationship management, executive presentations, stakeholder engagement",
-        torAlignment: torContent
-          ? "The TOR specifically mentions requirements for technical expertise and collaboration skills. Ensure these are prominently featured in your skills section."
-          : "Organize your skills to highlight your technical expertise and collaboration abilities.",
-      },
-    ];
-
-    // Add TOR-specific suggestions if TOR content is available
-    if (torContent) {
-      suggestions.push({
-        section: "TOR Alignment",
-        suggestion:
-          "Carefully analyze the Terms of Reference and customize your CV to directly address the specific requirements and priorities mentioned.",
-        suggestedCopy:
-          "Based on the TOR requirements, emphasize your experience with " +
-          (cvText.includes("Software Engineer")
-            ? "software development, API design, and cross-functional collaboration. Include specific examples of projects where you've successfully implemented technical solutions that align with the client's objectives."
-            : "financial analysis, strategic planning, and stakeholder engagement. Include specific examples of projects where you've successfully implemented strategies that align with the client's objectives."),
-        torAlignment:
-          "This is a critical section to ensure your CV is tailored specifically to the requirements outlined in the Terms of Reference document.",
-      });
-    }
-  }
-
-  return suggestions;
-};
-
-/**
  * Mock function to generate a PDF of the CV
  */
 export const generatePDF = async (
   cvText: string,
   template: string,
 ): Promise<Blob> => {
-  // This would be replaced with actual PDF generation
-  console.log(`Would generate PDF with template: ${template}`);
-
-  // For mock mode, simulate a delay
+  // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 1500));
-
-  // Randomly fail sometimes to test error handling
-  if (Math.random() < 0.3) {
-    throw new Error(
-      "PDF generation failed - this is a simulated error for testing error handling",
-    );
-  }
 
   // Return a mock PDF blob (this is just a placeholder)
   return new Blob([cvText], { type: "application/pdf" });
@@ -395,18 +228,8 @@ export const generateDOCX = async (
   cvText: string,
   template: string,
 ): Promise<Blob> => {
-  // This would be replaced with actual DOCX generation
-  console.log(`Would generate DOCX with template: ${template}`);
-
-  // For mock mode, simulate a delay
+  // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 1500));
-
-  // Randomly fail sometimes to test error handling
-  if (Math.random() < 0.3) {
-    throw new Error(
-      "DOCX generation failed - this is a simulated error for testing error handling",
-    );
-  }
 
   // Return a mock DOCX blob (this is just a placeholder)
   return new Blob([cvText], {
