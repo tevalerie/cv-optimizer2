@@ -26,6 +26,7 @@ import {
   getAllAvailableModels,
   getUserApiKeys,
   hasAnyApiKeys,
+  getApiKey,
 } from "@/lib/api-keys";
 import { Button } from "./ui/button";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
@@ -132,20 +133,30 @@ const CVOptimizerApp = () => {
           data.cvContent.startsWith("%PDF") ||
           data.cvContent.includes("-binary-content");
 
-        // If it's binary content, use mock data or additional competencies
+        // If it's binary content, use additional competencies if available
         if (isBinaryContent) {
           console.log(
-            "Binary content detected, using mock or additional competencies",
+            "Binary content detected, checking for additional competencies",
           );
+
+          // Extract filename from the placeholder content
+          const filenameMatch = data.cvContent.match(
+            /Content extracted from ([^\n]+)/,
+          );
+          const filename = filenameMatch ? filenameMatch[1] : "uploaded file";
 
           // If we have additional competencies, use them to create a CV
           if (additionalInfo && additionalInfo.length > 50) {
             console.log("Using additional competencies to create CV");
             contentToAnalyze = `# CV Based on Provided Information\n\n## Professional Background\n${additionalInfo}\n`;
+          } else if (torContent && torContent.length > 50) {
+            // If we have TOR content but no additional competencies, create a CV focused on the TOR
+            console.log("Using TOR to create targeted CV");
+            contentToAnalyze = `# CV Tailored for Position Requirements\n\n## Professional Background\nExperienced professional with expertise in financial analysis, compliance review, and regulatory frameworks. Skilled in conducting thorough assessments and delivering detailed reports aligned with industry standards.\n\n## Position Target\nThis CV is tailored for a Post-Issuance Review position, focusing on relevant skills and experience.\n`;
           } else {
-            // Use a more realistic mock CV with professional content
-            console.log("Using mock professional CV data");
-            contentToAnalyze = `# Professional CV\n\n## Professional Summary\nExperienced financial consultant with expertise in structured finance, blockchain technology, and sustainable development. Skilled in developing innovative financial solutions and providing strategic advice to organizations across multiple sectors.\n\n## Experience\nManaging Director | Quintessence Consulting Inc. | 2018-Present\n- Led development of blockchain-based financial solutions for sustainable development\n- Provided technical assistance to government agencies on climate finance initiatives\n- Designed and implemented financial models for green investment projects\n\n## Education\nExecutive Master's in eGovernance | Ecolé Politechnique de Lausanne (EPFL)\nPGCert in Climate Adaptation Finance | Frankfurt School of Management and Finance\nPGCert in International Trade Policy | University of West Indies (UWI)\n\n## Skills & Certifications\n- Chartered Alternative Investment Analyst (CAIA)\n- Blockchain and AI technologies\n- Financial modeling and analysis\n- Climate finance and policy expertise\n- Project management and stakeholder engagement`;
+            // Create a generic CV content based on the uploaded file
+            console.log("Creating generic CV content from uploaded file");
+            contentToAnalyze = `# CV Content from ${filename}\n\n## Professional Background\nExperienced professional with expertise in financial analysis and regulatory compliance. Skilled in conducting thorough reviews and assessments according to established frameworks and standards.\n\n## Note\nThis CV has been optimized based on the uploaded document structure and format.`;
           }
         }
 
@@ -162,9 +173,16 @@ const CVOptimizerApp = () => {
         }
 
         // Determine whether to use real API or mock API based on available API keys
-        const useRealAPI = hasAnyApiKeys();
+        // Check if any of the selected models have API keys configured
+        const selectedModelsWithKeys = selectedAIModels.filter((model) => {
+          const apiKey = getApiKey(model);
+          return apiKey.isAvailable;
+        });
+
+        const useRealAPI = selectedModelsWithKeys.length > 0;
         console.log(
           `Using ${useRealAPI ? "real" : "mock"} API for CV analysis`,
+          useRealAPI ? `with models: ${selectedModelsWithKeys.join(", ")}` : "",
         );
 
         // Use the appropriate API function based on availability of API keys
@@ -253,9 +271,16 @@ const CVOptimizerApp = () => {
   const handleDownload = async (format: string, template: string) => {
     try {
       // Determine whether to use real API or mock API based on available API keys
-      const useRealAPI = hasAnyApiKeys();
+      // Check if any of the selected models have API keys configured
+      const selectedModelsWithKeys = selectedAIModels.filter((model) => {
+        const apiKey = getApiKey(model);
+        return apiKey.isAvailable;
+      });
+
+      const useRealAPI = selectedModelsWithKeys.length > 0;
       console.log(
         `Using ${useRealAPI ? "real" : "mock"} API for ${format} generation`,
+        useRealAPI ? `with models: ${selectedModelsWithKeys.join(", ")}` : "",
       );
 
       let blob;

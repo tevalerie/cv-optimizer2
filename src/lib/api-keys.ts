@@ -80,12 +80,21 @@ export const getAvailableModels = (): string[] => {
     .filter((model) => Boolean(model.key))
     .map((model) => model.id);
 
-  // If no environment models are available, provide at least one default model for testing
-  if (envModels.length === 0) {
+  // Get user-provided keys
+  const userKeys = getUserApiKeys();
+  const userModels = Object.keys(userKeys).filter((key) =>
+    Boolean(userKeys[key]),
+  );
+
+  // Combine both sources
+  const allModels = [...new Set([...envModels, ...userModels])];
+
+  // If no models are available, provide at least one default model for testing
+  if (allModels.length === 0) {
     return ["openai"]; // Default to OpenAI for testing when no keys are available
   }
 
-  return envModels;
+  return allModels;
 };
 
 /**

@@ -33,7 +33,9 @@ import {
   Briefcase,
   Award,
   Loader2,
+  FileText,
 } from "lucide-react";
+import ParsedContent from "./ParsedContent";
 
 interface CVEditorProps {
   originalCV?: string;
@@ -1136,6 +1138,13 @@ Distinguished economist and financial innovator with over twenty years of expert
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Add the parsed content viewer */}
+      <ParsedContent
+        cvContent={originalCV}
+        torContent={torContent}
+        additionalCompetencies={additionalCompetencies}
+      />
     </div>
   );
 };
