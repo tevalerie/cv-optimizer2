@@ -40,9 +40,25 @@ const DownloadOptions = ({
 }: DownloadOptionsProps) => {
   const [selectedTemplate, setSelectedTemplate] = useState("eu");
   const [selectedFormat, setSelectedFormat] = useState("pdf");
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
-  const handleDownload = () => {
-    onDownload(selectedFormat, selectedTemplate);
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    setDownloadError(null);
+
+    try {
+      await onDownload(selectedFormat, selectedTemplate);
+      // Success - no need to do anything as the file should download
+    } catch (error) {
+      console.error(`Error downloading ${selectedFormat}:`, error);
+      setDownloadError(
+        `Unable to generate ${selectedFormat.toUpperCase()} file. ` +
+          `Please try ${selectedFormat === "pdf" ? "DOCX" : "PDF"} format instead.`,
+      );
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -231,14 +247,25 @@ const DownloadOptions = ({
               <p className="text-sm mb-4 text-gray-700">
                 You're about to download:{" "}
                 <span className="font-medium text-[#2B6CB0]">
-                  {cvData.title}
+                  {cvData.title || "Your Optimized CV"}
                 </span>
               </p>
               <ScrollArea className="h-32 mb-4 border rounded-md bg-white p-3 shadow-inner">
                 <div className="text-sm text-gray-700 whitespace-pre-wrap">
-                  {cvData.content}
+                  {typeof cvData.content === "string" &&
+                  cvData.content.startsWith("{")
+                    ? "Your optimized CV content is ready for download"
+                    : cvData.content}
                 </div>
               </ScrollArea>
+              {downloadError && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
+                  <div className="flex items-start">
+                    <AlertCircle className="h-4 w-4 mr-2 mt-0.5" />
+                    <p>{downloadError}</p>
+                  </div>
+                </div>
+              )}
               <div className="flex flex-wrap gap-2 mt-4">
                 <Badge className="bg-[#E0F7FA] text-[#2B6CB0] hover:bg-[#E0F7FA] border-[#2B6CB0]">
                   Template:{" "}
@@ -258,9 +285,19 @@ const DownloadOptions = ({
           <Button
             className="bg-[#E0F7FA] hover:bg-[#B2EBF2] text-[#2B6CB0] px-6 py-2 font-medium"
             onClick={handleDownload}
+            disabled={isDownloading}
           >
-            <Download className="mr-2 h-4 w-4" />
-            Download {selectedFormat.toUpperCase()}
+            {isDownloading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 h-4 w-4" />
+                Download {selectedFormat.toUpperCase()}
+              </>
+            )}
           </Button>
         </CardFooter>
       </Card>

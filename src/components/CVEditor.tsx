@@ -60,6 +60,66 @@ const CVEditor = ({
   const [activeTab, setActiveTab] = useState("edit");
   const [isBinaryContent, setIsBinaryContent] = useState(false);
   const [cvFormat, setCvFormat] = useState("detailed");
+  const [isRegenerating, setIsRegenerating] = useState(false);
+  const [actualOriginalCV, setActualOriginalCV] = useState("");
+  const [actualTorContent, setActualTorContent] = useState("");
+
+  // Process original CV and TOR content when they change
+  useEffect(() => {
+    if (originalCV) {
+      // Extract file information if present
+      const fileInfoMatch = originalCV.match(
+        /# Content extracted from (.+?)\s*\n\s*File type: (.+?)\s*\n\s*File size: (.+?)\s*\n/i,
+      );
+
+      if (fileInfoMatch) {
+        const fileName = fileInfoMatch[1];
+        const fileType = fileInfoMatch[2];
+        const fileSize = fileInfoMatch[3];
+
+        // Create a formatted header with the file information
+        const fileHeader = `# Content extracted from ${fileName}\n\nFile type: ${fileType}\nFile size: ${fileSize}\n\n`;
+
+        // Remove the header from the original content to get just the CV content
+        const contentWithoutHeader = originalCV.replace(
+          /# Content extracted from .+?\n\s*File type: .+?\s*\n\s*File size: .+?\s*\n/i,
+          "",
+        );
+
+        // Set the actual original CV with the header
+        setActualOriginalCV(fileHeader + contentWithoutHeader);
+      } else {
+        setActualOriginalCV(originalCV);
+      }
+    }
+
+    if (torContent) {
+      // Extract file information if present
+      const fileInfoMatch = torContent.match(
+        /# Content extracted from (.+?)\s*\n\s*File type: (.+?)\s*\n\s*File size: (.+?)\s*\n/i,
+      );
+
+      if (fileInfoMatch) {
+        const fileName = fileInfoMatch[1];
+        const fileType = fileInfoMatch[2];
+        const fileSize = fileInfoMatch[3];
+
+        // Create a formatted header with the file information
+        const fileHeader = `# Content extracted from ${fileName}\n\nFile type: ${fileType}\nFile size: ${fileSize}\n\n`;
+
+        // Remove the header from the original content to get just the TOR content
+        const contentWithoutHeader = torContent.replace(
+          /# Content extracted from .+?\n\s*File type: .+?\s*\n\s*File size: .+?\s*\n/i,
+          "",
+        );
+
+        // Set the actual TOR content with the header
+        setActualTorContent(fileHeader + contentWithoutHeader);
+      } else {
+        setActualTorContent(torContent);
+      }
+    }
+  }, [originalCV, torContent]);
 
   // Update editedCV when optimizedCV changes
   useEffect(() => {
@@ -230,13 +290,30 @@ Distinguished economist and financial innovator with over twenty years of expert
 
   // Function to regenerate CV
   const regenerateCV = () => {
-    // In a real implementation, this would call the API again
-    // For now, we'll just toggle between formats to simulate regeneration
-    const newFormat = cvFormat === "concise" ? "detailed" : "concise";
-    setCvFormat(newFormat);
+    // Show a loading state
+    setIsRegenerating(true);
 
-    // Add a small delay to make it feel like it's regenerating
+    // In a real implementation, this would call the API again
+    // We'll simulate an API call with a timeout
     setTimeout(() => {
+      // Keep the current format but generate new content
+      // This simulates calling the API with the same format preference
+      if (cvFormat === "concise") {
+        // Generate a slightly different concise version
+        const regeneratedConcise = conciseCV
+          .replace("Distinguished economist", "Award-winning economist")
+          .replace("over twenty years", "more than two decades");
+        setConciseCV(regeneratedConcise);
+        setEditedCV(regeneratedConcise);
+      } else {
+        // Generate a slightly different detailed version
+        const regeneratedDetailed = detailedCV
+          .replace("Distinguished economist", "Award-winning economist")
+          .replace("over twenty years", "more than two decades");
+        setDetailedCV(regeneratedDetailed);
+        setEditedCV(regeneratedDetailed);
+      }
+
       // Update the suggestions to make them feel fresh
       const updatedSuggestions = [...aiSuggestions];
       // Shuffle the suggestions array to make it feel like new suggestions
@@ -248,7 +325,8 @@ Distinguished economist and financial innovator with over twenty years of expert
         ];
       }
       setAiSuggestions(updatedSuggestions);
-    }, 1000);
+      setIsRegenerating(false);
+    }, 1500);
   };
 
   // Check if content appears to be binary data
@@ -552,6 +630,8 @@ Distinguished economist and financial innovator with over twenty years of expert
                           information you provided.
                         </p>
                       </div>
+                    ) : actualOriginalCV ? (
+                      actualOriginalCV
                     ) : originalCV ? (
                       originalCV
                     ) : (
@@ -569,7 +649,9 @@ Distinguished economist and financial innovator with over twenty years of expert
                           <h3 className="text-lg font-semibold text-[#2B6CB0] mb-2">
                             TOR Requirements
                           </h3>
-                          <div className="text-gray-700">{torContent}</div>
+                          <div className="text-gray-700">
+                            {actualTorContent || torContent}
+                          </div>
                         </div>
                       </>
                     )}
@@ -607,9 +689,19 @@ Distinguished economist and financial innovator with over twenty years of expert
                       <Button
                         onClick={regenerateCV}
                         variant="outline"
+                        disabled={isRegenerating}
                         className="flex items-center gap-2 border-[#2B6CB0] text-[#2B6CB0] hover:bg-[#E0F7FA]/50"
                       >
-                        <Sparkles className="h-4 w-4" /> Regenerate
+                        {isRegenerating ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />{" "}
+                            Regenerating...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="h-4 w-4" /> Regenerate
+                          </>
+                        )}
                       </Button>
                     </div>
                     <span className="text-sm font-medium">Format:</span>
