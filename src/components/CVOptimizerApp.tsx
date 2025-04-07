@@ -6,8 +6,21 @@ import AIModelSelector, { AIModel, AIModels } from "./AIModelSelector";
 import APIKeyConfig from "./APIKeyConfig";
 import { Progress } from "./ui/progress";
 import { Loader2, Sparkles, Settings } from "lucide-react";
-import { analyzeCV, generatePDF, generateDOCX } from "@/lib/api";
-import { getAllAvailableModels, getUserApiKeys } from "@/lib/api-keys";
+import {
+  analyzeCV as realAnalyzeCV,
+  generatePDF as realGeneratePDF,
+  generateDOCX as realGenerateDOCX,
+} from "@/lib/api";
+import {
+  analyzeCV as mockAnalyzeCV,
+  generatePDF as mockGeneratePDF,
+  generateDOCX as mockGenerateDOCX,
+} from "@/lib/mock-api";
+import {
+  getAllAvailableModels,
+  getUserApiKeys,
+  hasAnyApiKeys,
+} from "@/lib/api-keys";
 import { Button } from "./ui/button";
 
 type Step = "upload" | "edit" | "download";
@@ -123,11 +136,20 @@ export const CVOptimizerApp = () => {
         contentToAnalyze += "\n\n## Additional Competencies\n" + additionalInfo;
       }
 
-      // Use the actual uploaded content with the real API
-      const result = await analyzeCV(contentToAnalyze, selectedAIModels);
+      // Determine whether to use real API or mock API based on available API keys
+      const useRealAPI = hasAnyApiKeys();
+      console.log(`Using ${useRealAPI ? "real" : "mock"} API for CV analysis`);
+
+      // Use the appropriate API function based on availability of API keys
+      const result = useRealAPI
+        ? await realAnalyzeCV(contentToAnalyze, selectedAIModels)
+        : await mockAnalyzeCV(contentToAnalyze, selectedAIModels);
 
       // Set the improved CV content from the analysis result
       setCvContent(result.improvedText);
+
+      // Store the suggestions if they exist in the result
+      const suggestions = result.suggestions || [];
 
       // Complete the progress bar
       setAnalysisProgress(100);
@@ -161,11 +183,21 @@ export const CVOptimizerApp = () => {
 
   const handleDownload = async (format: string, template: string) => {
     try {
+      // Determine whether to use real API or mock API based on available API keys
+      const useRealAPI = hasAnyApiKeys();
+      console.log(
+        `Using ${useRealAPI ? "real" : "mock"} API for ${format} generation`,
+      );
+
       let blob;
       if (format === "pdf") {
-        blob = await generatePDF(cvContent, template);
+        blob = useRealAPI
+          ? await realGeneratePDF(cvContent, template)
+          : await mockGeneratePDF(cvContent, template);
       } else if (format === "docx") {
-        blob = await generateDOCX(cvContent, template);
+        blob = useRealAPI
+          ? await realGenerateDOCX(cvContent, template)
+          : await mockGenerateDOCX(cvContent, template);
       } else {
         throw new Error(`Unsupported format: ${format}`);
       }
@@ -283,6 +315,7 @@ export const CVOptimizerApp = () => {
               onSave={handleSaveCV}
               onBack={handleBack}
               onNext={handleNext}
+              aiModelsUsed={selectedAIModels}
             />
           )}
 

@@ -32,6 +32,7 @@ import {
   BookOpen,
   Briefcase,
   Award,
+  Loader2,
 } from "lucide-react";
 
 interface CVEditorProps {
@@ -57,7 +58,7 @@ const CVEditor = ({
   const [conciseCV, setConciseCV] = useState("");
   const [detailedCV, setDetailedCV] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("standard");
-  const [activeTab, setActiveTab] = useState("edit");
+  const [activeTab, setActiveTab] = useState("original");
   const [isBinaryContent, setIsBinaryContent] = useState(false);
   const [cvFormat, setCvFormat] = useState("detailed");
   const [isRegenerating, setIsRegenerating] = useState(false);
@@ -584,101 +585,110 @@ Distinguished economist and financial innovator with over twenty years of expert
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-6">
-          <TabsTrigger value="edit" className="font-medium">
-            <BookOpen className="mr-2 h-4 w-4" /> Edit Content
+          <TabsTrigger value="original" className="font-medium">
+            <BookOpen className="mr-2 h-4 w-4" /> Original CV
           </TabsTrigger>
-          <TabsTrigger value="suggestions" className="font-medium">
-            <Sparkles className="mr-2 h-4 w-4" /> AI Suggestions
+          <TabsTrigger value="edit" className="font-medium">
+            <Sparkles className="mr-2 h-4 w-4" /> Edit CV
           </TabsTrigger>
           <TabsTrigger value="preview" className="font-medium">
             <FileDown className="mr-2 h-4 w-4" /> Preview & Export
           </TabsTrigger>
         </TabsList>
 
+        <TabsContent value="original" className="space-y-6">
+          <Card className="shadow-md border-[#E0F7FA]">
+            <CardHeader className="bg-gray-50 border-b">
+              <CardTitle className="text-[#2B6CB0] font-playfair flex items-center">
+                <BookOpen className="mr-2 h-5 w-5" /> Original CV
+              </CardTitle>
+              <CardDescription>Your uploaded CV content</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              <ScrollArea className="h-[500px] p-4">
+                <div className="font-mono whitespace-pre-wrap">
+                  {isBinaryContent ? (
+                    <div className="text-gray-700">
+                      <p className="mb-4">
+                        Binary file content detected. The system has processed
+                        your file.
+                      </p>
+                      <p className="mb-2">
+                        File name:{" "}
+                        {originalCV.includes("docx")
+                          ? "document.docx"
+                          : "document.pdf"}
+                      </p>
+                      <p className="mb-4">
+                        <span className="text-green-600 font-medium">
+                          ✓ Successfully processed
+                        </span>
+                      </p>
+                      <p>
+                        The AI has analyzed your document and created an
+                        optimized CV based on the content and any additional
+                        information you provided.
+                      </p>
+                    </div>
+                  ) : actualOriginalCV ? (
+                    actualOriginalCV
+                  ) : originalCV ? (
+                    originalCV
+                  ) : (
+                    <div className="text-gray-500 italic">
+                      <p>
+                        No CV content uploaded yet. Please upload a CV file to
+                        see the content here.
+                      </p>
+                    </div>
+                  )}
+
+                  {torContent && (
+                    <>
+                      <div className="mt-6 pt-4 border-t border-gray-200">
+                        <h3 className="text-lg font-semibold text-[#2B6CB0] mb-2">
+                          TOR Requirements
+                        </h3>
+                        <div className="text-gray-700">
+                          {actualTorContent || torContent}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {additionalCompetencies && (
+                    <>
+                      <div className="mt-6 pt-4 border-t border-gray-200">
+                        <h3 className="text-lg font-semibold text-[#2B6CB0] mb-2">
+                          Additional Competencies
+                        </h3>
+                        <div className="text-gray-700">
+                          {additionalCompetencies}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </ScrollArea>
+            </CardContent>
+            <CardFooter className="bg-gray-50 border-t flex justify-end">
+              <Button
+                onClick={() => setActiveTab("edit")}
+                className="flex items-center gap-2 bg-[#E0F7FA] text-[#2B6CB0] hover:bg-[#B2EBF2]"
+              >
+                Next <ArrowRight className="h-4 w-4" />
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="edit" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Original CV - Left Column */}
-            <Card className="h-full shadow-md border-[#E0F7FA]">
-              <CardHeader className="bg-gray-50 border-b">
-                <CardTitle className="text-[#2B6CB0] font-playfair flex items-center">
-                  <BookOpen className="mr-2 h-5 w-5" /> Original CV
-                </CardTitle>
-                <CardDescription>Your uploaded CV content</CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <ScrollArea className="h-[500px] p-4">
-                  <div className="font-mono whitespace-pre-wrap">
-                    {isBinaryContent ? (
-                      <div className="text-gray-700">
-                        <p className="mb-4">
-                          Binary file content detected. The system has processed
-                          your file.
-                        </p>
-                        <p className="mb-2">
-                          File name:{" "}
-                          {originalCV.includes("docx")
-                            ? "document.docx"
-                            : "document.pdf"}
-                        </p>
-                        <p className="mb-4">
-                          <span className="text-green-600 font-medium">
-                            ✓ Successfully processed
-                          </span>
-                        </p>
-                        <p>
-                          The AI has analyzed your document and created an
-                          optimized CV based on the content and any additional
-                          information you provided.
-                        </p>
-                      </div>
-                    ) : actualOriginalCV ? (
-                      actualOriginalCV
-                    ) : originalCV ? (
-                      originalCV
-                    ) : (
-                      <div className="text-gray-500 italic">
-                        <p>
-                          No CV content uploaded yet. Please upload a CV file to
-                          see the content here.
-                        </p>
-                      </div>
-                    )}
-
-                    {torContent && (
-                      <>
-                        <div className="mt-6 pt-4 border-t border-gray-200">
-                          <h3 className="text-lg font-semibold text-[#2B6CB0] mb-2">
-                            TOR Requirements
-                          </h3>
-                          <div className="text-gray-700">
-                            {actualTorContent || torContent}
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {additionalCompetencies && (
-                      <>
-                        <div className="mt-6 pt-4 border-t border-gray-200">
-                          <h3 className="text-lg font-semibold text-[#2B6CB0] mb-2">
-                            Additional Competencies
-                          </h3>
-                          <div className="text-gray-700">
-                            {additionalCompetencies}
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-
-            {/* AI Suggestions - Middle Column */}
+            {/* AI Suggestions - Left Column */}
             <Card className="h-full shadow-md border-[#E0F7FA]">
               <CardHeader className="bg-[#F5F5DC] border-b">
                 <CardTitle className="text-[#2B6CB0] font-playfair flex items-center">
-                  <Award className="mr-2 h-5 w-5" /> AI Suggestions
+                  <Award className="mr-2 h-5 w-5" /> AI Enhancement Suggestions
                 </CardTitle>
                 <CardDescription>
                   Recommendations to improve your CV
@@ -687,7 +697,7 @@ Distinguished economist and financial innovator with over twenty years of expert
               <CardContent className="p-0">
                 <ScrollArea className="h-[500px] p-4">
                   <div className="space-y-4">
-                    {aiSuggestions.slice(0, 3).map((item, index) => (
+                    {aiSuggestions.map((item, index) => (
                       <div
                         key={index}
                         className="bg-white p-3 rounded-lg border border-[#E0F7FA] shadow-sm mb-4"
@@ -711,24 +721,60 @@ Distinguished economist and financial innovator with over twenty years of expert
                             <p className="text-gray-700 text-sm mb-2">
                               {item.suggestion}
                             </p>
+                            {item.suggestedCopy && (
+                              <div className="mt-2 mb-2">
+                                <h5 className="text-xs font-medium text-[#2B6CB0] mb-1 flex items-center">
+                                  <Sparkles className="h-3 w-3 mr-1" />{" "}
+                                  Suggested Copy
+                                </h5>
+                                <div className="bg-gray-50 p-2 rounded-md border border-gray-200 text-gray-800 text-xs">
+                                  {item.suggestedCopy.length > 100
+                                    ? `${item.suggestedCopy.substring(0, 100)}...`
+                                    : item.suggestedCopy}
+                                </div>
+                              </div>
+                            )}
+                            {item.torAlignment && (
+                              <div className="mt-2">
+                                <h5 className="text-xs font-medium text-[#2B6CB0] mb-1 flex items-center">
+                                  <BookOpen className="h-3 w-3 mr-1" /> TOR
+                                  Alignment
+                                </h5>
+                                <div className="bg-[#F5F5DC]/50 p-2 rounded-md border border-[#E0F7FA] text-gray-700 text-xs">
+                                  {item.torAlignment}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
                     ))}
-                    <Button
-                      variant="outline"
-                      onClick={() => setActiveTab("suggestions")}
-                      className="w-full border-[#2B6CB0] text-[#2B6CB0] mt-2"
-                    >
-                      View All Suggestions
-                    </Button>
                   </div>
                 </ScrollArea>
               </CardContent>
+              <CardFooter className="bg-gray-50 border-t">
+                <Button
+                  onClick={regenerateCV}
+                  variant="outline"
+                  disabled={isRegenerating}
+                  className="w-full flex items-center justify-center gap-2 border-[#2B6CB0] text-[#2B6CB0] hover:bg-[#E0F7FA]/50"
+                >
+                  {isRegenerating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Refreshing
+                      Suggestions...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4" /> Refresh Suggestions
+                    </>
+                  )}
+                </Button>
+              </CardFooter>
             </Card>
 
-            {/* AI-Optimized CV - Right Column */}
-            <Card className="h-full shadow-md border-[#E0F7FA]">
+            {/* AI-Optimized CV - Right Column (now spans 2 columns) */}
+            <Card className="h-full shadow-md border-[#E0F7FA] md:col-span-2">
               <CardHeader className="bg-[#F5F5DC] border-b">
                 <div className="flex justify-between items-center">
                   <div>
@@ -779,111 +825,31 @@ Distinguished economist and financial innovator with over twenty years of expert
                   onChange={(e) => setEditedCV(e.target.value)}
                 />
               </CardContent>
-              <CardFooter className="bg-gray-50 border-t flex justify-end">
+              <CardFooter className="bg-gray-50 border-t flex justify-between">
                 <Button
-                  onClick={handleSave}
-                  className="flex items-center gap-2 bg-[#E0F7FA] text-[#2B6CB0] hover:bg-[#B2EBF2]"
+                  variant="outline"
+                  onClick={() => setActiveTab("original")}
+                  className="border-[#2B6CB0] text-[#2B6CB0]"
                 >
-                  <Save className="h-4 w-4" /> Save Changes
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Back to Original
                 </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleSave}
+                    className="flex items-center gap-2 bg-[#E0F7FA] text-[#2B6CB0] hover:bg-[#B2EBF2]"
+                  >
+                    <Save className="h-4 w-4" /> Save Changes
+                  </Button>
+                  <Button
+                    onClick={() => setActiveTab("preview")}
+                    className="flex items-center gap-2 bg-[#E0F7FA] text-[#2B6CB0] hover:bg-[#B2EBF2]"
+                  >
+                    Preview Results <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
               </CardFooter>
             </Card>
           </div>
-        </TabsContent>
-
-        <TabsContent value="suggestions" className="space-y-6">
-          <Card className="shadow-md border-[#E0F7FA]">
-            <CardHeader className="bg-[#F5F5DC] border-b">
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle className="text-[#2B6CB0] font-playfair flex items-center">
-                    <Award className="mr-2 h-5 w-5" /> AI Enhancement
-                    Suggestions
-                  </CardTitle>
-                  <CardDescription>
-                    Our AI has analyzed your CV and provided these
-                    recommendations
-                  </CardDescription>
-                </div>
-                <Button
-                  onClick={regenerateCV}
-                  variant="outline"
-                  className="flex items-center gap-2 border-[#2B6CB0] text-[#2B6CB0] hover:bg-[#E0F7FA]/50"
-                >
-                  <Sparkles className="h-4 w-4" /> Refresh Suggestions
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                {aiSuggestions.map((item, index) => (
-                  <div
-                    key={index}
-                    className="bg-white p-4 rounded-lg border border-[#E0F7FA] shadow-sm mb-6"
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className="bg-[#E0F7FA] p-2 rounded-full mt-1">
-                        <CheckCircle className="h-4 w-4 text-[#2B6CB0]" />
-                      </div>
-                      <div className="w-full">
-                        <div className="flex items-center mb-2">
-                          <h4 className="font-semibold text-[#2B6CB0] mr-2">
-                            {item.section}
-                          </h4>
-                          <Badge
-                            variant="outline"
-                            className="bg-[#E0F7FA]/30 text-[#2B6CB0] border-[#2B6CB0]"
-                          >
-                            Recommendation
-                          </Badge>
-                        </div>
-                        <p className="text-gray-700 mb-4">{item.suggestion}</p>
-
-                        {item.suggestedCopy && (
-                          <div className="mt-3 mb-3">
-                            <h5 className="text-sm font-medium text-[#2B6CB0] mb-2 flex items-center">
-                              <Sparkles className="h-3 w-3 mr-1" /> Suggested
-                              Copy
-                            </h5>
-                            <div className="bg-gray-50 p-3 rounded-md border border-gray-200 text-gray-800 text-sm">
-                              {item.suggestedCopy}
-                            </div>
-                          </div>
-                        )}
-
-                        {item.torAlignment && (
-                          <div className="mt-3">
-                            <h5 className="text-sm font-medium text-[#2B6CB0] mb-2 flex items-center">
-                              <BookOpen className="h-3 w-3 mr-1" /> TOR
-                              Alignment
-                            </h5>
-                            <div className="bg-[#F5F5DC]/50 p-3 rounded-md border border-[#E0F7FA] text-gray-700 text-sm">
-                              {item.torAlignment}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-            <CardFooter className="bg-gray-50 border-t flex justify-between">
-              <Button
-                variant="outline"
-                onClick={() => setActiveTab("edit")}
-                className="border-[#2B6CB0] text-[#2B6CB0]"
-              >
-                Back to Editor
-              </Button>
-              <Button
-                onClick={() => setActiveTab("preview")}
-                className="bg-[#E0F7FA] text-[#2B6CB0] hover:bg-[#B2EBF2]"
-              >
-                Preview Results <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardFooter>
-          </Card>
         </TabsContent>
 
         <TabsContent value="preview" className="space-y-6">
@@ -967,10 +933,10 @@ Distinguished economist and financial innovator with over twenty years of expert
             <CardFooter className="bg-gray-50 border-t flex justify-between">
               <Button
                 variant="outline"
-                onClick={() => setActiveTab("suggestions")}
+                onClick={() => setActiveTab("edit")}
                 className="border-[#2B6CB0] text-[#2B6CB0]"
               >
-                Back to Suggestions
+                Back to Editor
               </Button>
               <Button
                 onClick={onNext}

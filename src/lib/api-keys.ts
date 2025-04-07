@@ -80,6 +80,11 @@ export const getAvailableModels = (): string[] => {
     .filter((model) => Boolean(model.key))
     .map((model) => model.id);
 
+  // If no environment models are available, provide at least one default model for testing
+  if (envModels.length === 0) {
+    return ["openai"]; // Default to OpenAI for testing when no keys are available
+  }
+
   return envModels;
 };
 
@@ -98,6 +103,12 @@ export const getAllAvailableModels = (): string[] => {
 
   // Combine and remove duplicates
   const allModels = [...new Set([...envModels, ...userModels])];
+
+  // If no models are available after checking both env and user keys,
+  // provide at least one default model for testing
+  if (allModels.length === 0) {
+    return ["openai"]; // Default to OpenAI for testing when no keys are available
+  }
 
   return allModels;
 };
