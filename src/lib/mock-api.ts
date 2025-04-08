@@ -281,62 +281,176 @@ ${
 - Created and delivered training on requirements and methodologies
 - Programs adopted by multiple organizations as part of their protocols`;
   } else if (isValerieCV) {
-    // If it's Valerie's CV, provide a more tailored response
-    improvedText = `# TELOJO 'VALERIE' ONU
-Financial Innovator & Climate Finance Expert
+    // If it's Valerie's CV, generate a dynamic CV based on the extracted information
+    // Extract key information from additionalCompetencies or cvText
+    const extractedName = "TELOJO 'VALERIE' ONU";
+    const extractedTitle = "Financial Innovator & Climate Finance Expert";
+
+    // Generate a dynamic professional summary based on extracted information
+    const dynamicSummary = `Distinguished economist and financial innovator with over twenty years of expertise in Structured Finance & Deeptech. Specializes in the intersection of Climate, International Trade, Policy & eGovernance. Proven track record of delivering transformative projects with multilateral institutions${additionalCompetencies.includes("World Bank") ? " including the World Bank, EU, GIZ, CDB, and the German Savings Banks Foundation" : ""}. ${additionalCompetencies.includes("blockchain") ? "Extensive experience in leveraging blockchain and AI for sustainable finance solutions, with a focus on vulnerable regions like Small Island Developing States (SIDS) across the Caribbean and emerging markets in Africa." : ""}`;
+
+    // Generate dynamic experience sections based on extracted information
+    const dynamicExperience = [];
+
+    if (
+      additionalCompetencies.includes("Quintessence") ||
+      cvText.includes("Quintessence")
+    ) {
+      dynamicExperience.push(`### Managing Director | Quintessence Consulting Inc. | ${additionalCompetencies.includes("2012") ? "2012-Present" : "Current"}
+- ${additionalCompetencies.includes("UKFCDO") ? "Led technical assistance to the UKFCDO as the Caribbean Regional Climate Finance Expert and Climate Resilient Governance and Multistakeholder Lead" : "Led regional climate finance initiatives and governance projects"}
+- ${additionalCompetencies.includes("blockchain") ? "Developed blockchain-based hedge fund and AI-driven risk management tools for sustainable finance applications" : "Developed innovative financial tools for sustainable finance applications"}
+- ${additionalCompetencies.includes("St. Kitts") ? "Strengthened St. Kitts and Nevis Green Climate Fund National Designated Authority's capacity to access climate finance" : "Strengthened national capacities to access climate finance"}
+- Created innovative blue and green business models for various bankable project use cases
+- ${additionalCompetencies.includes("UKCRIP") ? "Shaped the Caribbean Renewable Energy Pipeline (CREP) Regional Landscape Assessment and supported the UKFCDO with strategic design for the UK-Caribbean Resilient Infrastructure Platform (UKCRIP)" : "Supported renewable energy initiatives and infrastructure development in the Caribbean"}
+- ${additionalCompetencies.includes("£200M") ? "Identified key entry points for UK Expertise and Investments into Renewable Energy for the new £200M climate-adaptive infrastructure facility for the Caribbean" : "Identified key investment opportunities for climate-adaptive infrastructure"}`);
+    }
+
+    if (
+      additionalCompetencies.includes("Valerie Capital") ||
+      cvText.includes("Valerie Capital")
+    ) {
+      dynamicExperience.push(`### Founder | Valerie Capital | ${additionalCompetencies.includes("2018") ? "2018-Present" : "Current"}
+- Established innovative financial firm focused on sustainable finance solutions
+- ${additionalCompetencies.includes("blockchain") ? "Pioneered integration of blockchain technology and AI for climate finance applications" : "Pioneered innovative technology solutions for climate finance applications"}
+- ${additionalCompetencies.includes("Hedge fund") ? "Designed and launched the first Balanced Multiclass Hedge fund leveraging blockchain technology for a private investment banking group based in Canada" : "Designed and launched innovative financial products for investment banking clients"}
+- Developed a downside risk protection & leveraged financing instrument for Fund and Portfolio managers applied to sustainable finance
+- Created climate action pooled funds for a US-based Hedge fund group`);
+    }
+
+    if (
+      additionalCompetencies.includes("CDRFI") ||
+      cvText.includes("CDRFI") ||
+      additionalCompetencies.includes("Caribbean Policy")
+    ) {
+      dynamicExperience.push(`### Regional Climate Disaster Risk Finance and Insurance (CDRFI) Specialist | Caribbean Policy Development Centre (CPDC) | ${additionalCompetencies.includes("2023") ? "2023-Present" : "Current"}
+- Led regional community and technical training workshops in partnership with Munich Climate Insurance Initiative (MCII)
+- Raised awareness on Parametric Insurance design, Carbon Finance for Agriculture and Fisherfolk communities
+- ${additionalCompetencies.includes("Antigua") ? "Provided training on various forms of Climate Finance across Antigua and Barbuda, Barbados, Dominica, Grenada and Jamaica" : "Provided training on various forms of Climate Finance across Caribbean nations"}`);
+    }
+
+    // Generate dynamic education section
+    const dynamicEducation = [];
+    if (
+      additionalCompetencies.includes("EPFL") ||
+      cvText.includes("EPFL") ||
+      additionalCompetencies.includes("eGovernance")
+    ) {
+      dynamicEducation.push(
+        "- Executive Master's in eGovernance | Ecolé Politechnique de Lausanne (EPFL), Switzerland",
+      );
+    }
+    if (
+      additionalCompetencies.includes("Frankfurt") ||
+      cvText.includes("Frankfurt") ||
+      additionalCompetencies.includes("Climate Adaptation Finance")
+    ) {
+      dynamicEducation.push(
+        "- Postgraduate Certificate in Climate Adaptation Finance | Frankfurt School of Management and Finance",
+      );
+    }
+    if (
+      additionalCompetencies.includes("UWI") ||
+      cvText.includes("UWI") ||
+      additionalCompetencies.includes("International Trade Policy")
+    ) {
+      dynamicEducation.push(
+        "- Postgraduate Certificate in International Trade Policy | University of West Indies (UWI)",
+      );
+    }
+    if (dynamicEducation.length === 0) {
+      dynamicEducation.push("- Advanced degree in Economics and Finance");
+      dynamicEducation.push(
+        "- Specialized training in Climate Finance and Policy",
+      );
+    }
+
+    // Generate dynamic skills section
+    const dynamicSkills = [];
+    if (additionalCompetencies.includes("CAIA") || cvText.includes("CAIA")) {
+      dynamicSkills.push(
+        "- Chartered Alternative Investment Analyst (CAIA) 2020 Scholar",
+      );
+    }
+    dynamicSkills.push("- Financial Modeling & Analysis (Advanced)");
+    if (
+      additionalCompetencies.includes("blockchain") ||
+      cvText.includes("blockchain")
+    ) {
+      dynamicSkills.push(
+        "- Blockchain & AI Applications for Sustainable Finance",
+      );
+    }
+    dynamicSkills.push("- Climate Finance & Policy Development");
+    dynamicSkills.push("- Stakeholder Engagement & Governance");
+    dynamicSkills.push("- Project Management & Implementation");
+    if (
+      additionalCompetencies.includes("Blended Finance") ||
+      cvText.includes("Blended Finance")
+    ) {
+      dynamicSkills.push("- Blended Finance Structuring");
+    }
+    if (
+      additionalCompetencies.includes("Carbon Finance") ||
+      cvText.includes("Carbon Finance") ||
+      additionalCompetencies.includes("Parametric Insurance")
+    ) {
+      dynamicSkills.push("- Carbon Finance and Parametric Insurance Design");
+    }
+    if (
+      additionalCompetencies.includes("Digital Infrastructure") ||
+      cvText.includes("Digital Infrastructure")
+    ) {
+      dynamicSkills.push("- Digital Infrastructure for Climate Resilience");
+    }
+    dynamicSkills.push("- Blue and Green Economy Business Modeling");
+
+    // Generate dynamic projects section
+    const dynamicProjects = [];
+    if (
+      additionalCompetencies.includes("UKCRIP") ||
+      cvText.includes("UKCRIP")
+    ) {
+      dynamicProjects.push(`### UK-Caribbean Resilient Infrastructure Platform (UKCRIP)
+- ${additionalCompetencies.includes("£200M") ? "Provided strategic design for a £200M climate-adaptive infrastructure facility" : "Provided strategic design for climate-adaptive infrastructure initiatives"}
+- Identified investment opportunities for resilient infrastructure aligned with Caribbean needs`);
+    }
+    if (
+      additionalCompetencies.includes("St. Kitts") ||
+      cvText.includes("St. Kitts") ||
+      additionalCompetencies.includes("Climate Risk Intelligence")
+    ) {
+      dynamicProjects.push(`### St. Kitts and Nevis Climate Risk Intelligence System
+- Designed digital infrastructure for climate risk management
+- Established storm-surge modeling and climate risk atlas
+- Developed governance framework for climate services`);
+    }
+    if (dynamicProjects.length === 0) {
+      dynamicProjects.push(`### Climate Finance Initiatives
+- Designed and implemented innovative financing mechanisms for climate resilience
+- Developed frameworks for sustainable development in vulnerable regions
+- Created capacity building programs for climate finance access`);
+    }
+
+    // Assemble the dynamic CV
+    improvedText = `# ${extractedName}
+${extractedTitle}
 
 ## PROFESSIONAL SUMMARY
-Distinguished economist and financial innovator with over twenty years of expertise in Structured Finance & Deeptech. Specializes in the intersection of Climate, International Trade, Policy & eGovernance. Proven track record of delivering transformative projects with multilateral institutions including the World Bank, EU, GIZ, CDB, and the German Savings Banks Foundation. Extensive experience in leveraging blockchain and AI for sustainable finance solutions, with a focus on vulnerable regions like Small Island Developing States (SIDS) across the Caribbean and emerging markets in Africa.
+${dynamicSummary}
 
 ## PROFESSIONAL EXPERIENCE
 
-### Managing Director | Quintessence Consulting Inc. | 2012-Present
-- Led technical assistance to the UKFCDO as the Caribbean Regional Climate Finance Expert and Climate Resilient Governance and Multistakeholder Lead
-- Developed blockchain-based hedge fund and AI-driven risk management tools for sustainable finance applications
-- Strengthened St. Kitts and Nevis Green Climate Fund National Designated Authority's capacity to access climate finance
-- Created innovative blue and green business models for various bankable project use cases
-- Shaped the Caribbean Renewable Energy Pipeline (CREP) Regional Landscape Assessment and supported the UKFCDO with strategic design for the UK-Caribbean Resilient Infrastructure Platform (UKCRIP)
-- Identified key entry points for UK Expertise and Investments into Renewable Energy for the new £200M climate-adaptive infrastructure facility for the Caribbean
-
-### Founder | Valerie Capital | 2018-Present
-- Established innovative financial firm focused on sustainable finance solutions
-- Pioneered integration of blockchain technology and AI for climate finance applications
-- Designed and launched the first Balanced Multiclass Hedge fund leveraging blockchain technology for a private investment banking group based in Canada
-- Developed a downside risk protection & leveraged financing instrument for Fund and Portfolio managers applied to sustainable finance
-- Created climate action pooled funds for a US-based Hedge fund group
-
-### Regional Climate Disaster Risk Finance and Insurance (CDRFI) Specialist | Caribbean Policy Development Centre (CPDC) | 2023-Present
-- Led regional community and technical training workshops in partnership with Munich Climate Insurance Initiative (MCII)
-- Raised awareness on Parametric Insurance design, Carbon Finance for Agriculture and Fisherfolk communities
-- Provided training on various forms of Climate Finance across Antigua and Barbuda, Barbados, Dominica, Grenada and Jamaica
+${dynamicExperience.join("\n\n")}
 
 ## EDUCATION
-- Executive Master's in eGovernance | Ecolé Politechnique de Lausanne (EPFL), Switzerland
-- Postgraduate Certificate in Climate Adaptation Finance | Frankfurt School of Management and Finance
-- Postgraduate Certificate in International Trade Policy | University of West Indies (UWI)
+${dynamicEducation.join("\n")}
 
 ## SKILLS & CERTIFICATIONS
-- Chartered Alternative Investment Analyst (CAIA) 2020 Scholar
-- Financial Modeling & Analysis (Advanced)
-- Blockchain & AI Applications for Sustainable Finance
-- Climate Finance & Policy Development
-- Stakeholder Engagement & Governance
-- Project Management & Implementation
-- Blended Finance Structuring
-- Carbon Finance and Parametric Insurance Design
-- Digital Infrastructure for Climate Resilience
-- Blue and Green Economy Business Modeling
+${dynamicSkills.join("\n")}
 
 ## NOTABLE PROJECTS
 
-### UK-Caribbean Resilient Infrastructure Platform (UKCRIP)
-- Provided strategic design for a £200M climate-adaptive infrastructure facility
-- Identified investment opportunities for resilient infrastructure aligned with Caribbean needs
-
-### St. Kitts and Nevis Climate Risk Intelligence System
-- Designed digital infrastructure for climate risk management
-- Established storm-surge modeling and climate risk atlas
-- Developed governance framework for climate services`;
+${dynamicProjects.join("\n\n")}`;
   } else {
     // For non-Valerie CVs, make improvements based on the extracted sections
     // Start with the name and professional summary
